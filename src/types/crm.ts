@@ -1,4 +1,4 @@
-// src/types/crm.ts — Auto Bourn CRM TypeScript Interfaces
+// src/types/crm.ts — CRM TypeScript Interfaces
 
 export type LeadStatus =
   | 'new'
@@ -8,6 +8,7 @@ export type LeadStatus =
   | 'test_drive_scheduled'
   | 'negotiation'
   | 'booking_done'
+  | 'deal_closed'
   | 'sold'
   | 'lost';
 
@@ -134,6 +135,7 @@ export const LEAD_STAGES: { key: LeadStatus; label: string; color: string; bg: s
   { key: 'test_drive_scheduled',   label: 'Test Drive Scheduled',  color: '#8b5cf6', bg: 'rgba(139,92,246,.12)' },
   { key: 'negotiation',            label: 'Negotiation',           color: '#ec4899', bg: 'rgba(236,72,153,.12)' },
   { key: 'booking_done',           label: 'Booking Done',          color: '#22c55e', bg: 'rgba(34,197,94,.12)'  },
+  { key: 'deal_closed',            label: 'Deal Closed',           color: '#10b981', bg: 'rgba(16,185,129,.12)' },
   { key: 'sold',                   label: 'Sold',                  color: '#E10613', bg: 'rgba(225,6,19,.12)'   },
   { key: 'lost',                   label: 'Lost',                  color: '#6b7280', bg: 'rgba(107,114,128,.12)' },
 ];

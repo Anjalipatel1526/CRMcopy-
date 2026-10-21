@@ -2,9 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import CRMSidebar from '@/components/CRMSidebar';
-import CRMTopBar from '@/components/CRMTopBar';
 import AddLeadModal from '@/components/AddLeadModal';
 import SettingsModal from '@/components/SettingsModal';
 
@@ -13,19 +11,27 @@ export default function CRMDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // When on overview page (/dashboard/crm), the page renders the exact 3-column reference layout
-  const isOverviewPage = pathname === '/dashboard/crm';
-
   return (
     <div className="min-h-screen bg-[#F5F8FC] text-[#173B67] flex selection:bg-[#F5223B]/10 selection:text-[#F5223B] antialiased font-sans overflow-x-hidden">
-      {/* Desktop Persistent Sidebar (220px consistent desktop width) */}
-      <div className="hidden md:block w-[220px] min-w-[220px] max-w-[220px] flex-shrink-0 h-screen sticky top-0 z-30">
-        <CRMSidebar onOpenSettings={() => setIsSettingsOpen(true)} />
+      {/* Desktop Persistent Sidebar (200px expanded or 64px collapsed icon rail when closed) */}
+      <div
+        className={`hidden md:block flex-shrink-0 h-screen sticky top-0 z-30 transition-all duration-300 ease-in-out ${
+          isSidebarCollapsed
+            ? 'w-[64px] min-w-[64px] max-w-[64px]'
+            : 'w-[200px] min-w-[200px] max-w-[200px]'
+        }`}
+      >
+        <CRMSidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          onClose={() => setIsSidebarCollapsed(true)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+        />
       </div>
 
       {/* Mobile Drawer Overlay */}
@@ -49,13 +55,7 @@ export default function CRMDashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {!isOverviewPage && (
-          <CRMTopBar
-            onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-            onOpenQuickAdd={() => setIsQuickAddOpen(true)}
-          />
-        )}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">
           {children}
         </main>
       </div>

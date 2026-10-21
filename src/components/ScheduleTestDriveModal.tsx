@@ -34,7 +34,7 @@ export default function ScheduleTestDriveModal({
   const [cars, setCars] = useState<CarType[]>([]);
   const [selectedCarId, setSelectedCarId] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
-  const [location, setLocation] = useState('Autobourn Showroom, Velachery');
+  const [location, setLocation] = useState('Showroom, Velachery');
   const [notes, setNotes] = useState('');
   const [collisionWarning, setCollisionWarning] = useState<string | null>(null);
   const [checkingCollision, setCheckingCollision] = useState(false);

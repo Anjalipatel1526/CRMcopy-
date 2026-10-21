@@ -17,9 +17,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'AUTO BOURN — Luxury Automobile CRM',
+  title: 'Luxury Automobile CRM',
   description:
-    'Pre-owned luxury automobile dealership CRM. 9-Stage consultative pipeline, deduplicated lead ingestion, test drive scheduling, and executive analytics.',
+    'Pre-owned luxury automobile dealership CRM. Consultative pipeline, deduplicated lead ingestion, follow-up scheduling, and executive analytics.',
 };
 
 export default function RootLayout({

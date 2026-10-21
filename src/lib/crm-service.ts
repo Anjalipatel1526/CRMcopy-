@@ -5,17 +5,17 @@ import { MOCK_LEADS, MOCK_FOLLOW_UPS, MOCK_TEST_DRIVES, MOCK_BOOKINGS, MOCK_CUST
 import { createClient } from './supabase/client';
 
 const STORAGE_KEYS = {
-  LEADS: 'autobourn_crm_leads',
-  FOLLOW_UPS: 'autobourn_crm_follow_ups',
-  TEST_DRIVES: 'autobourn_crm_test_drives',
-  BOOKINGS: 'autobourn_crm_bookings',
-  NOTES: 'autobourn_crm_notes',
-  LOGS: 'autobourn_crm_logs',
-  CARS: 'autobourn_crm_cars',
-  EMPLOYEES: 'autobourn_crm_employees',
-  USE_LIVE_DB: 'autobourn_crm_use_live_db',
-  CURRENT_USER_ROLE: 'autobourn_crm_current_user_role', // 'admin' | 'employee'
-  CURRENT_EMPLOYEE_ID: 'autobourn_crm_current_emp_id',
+  LEADS: 'dealership_crm_leads',
+  FOLLOW_UPS: 'dealership_crm_follow_ups',
+  TEST_DRIVES: 'dealership_crm_test_drives',
+  BOOKINGS: 'dealership_crm_bookings',
+  NOTES: 'dealership_crm_notes',
+  LOGS: 'dealership_crm_logs',
+  CARS: 'dealership_crm_cars',
+  EMPLOYEES: 'dealership_crm_employees',
+  USE_LIVE_DB: 'dealership_crm_use_live_db',
+  CURRENT_USER_ROLE: 'dealership_crm_current_user_role', // 'admin' | 'employee'
+  CURRENT_EMPLOYEE_ID: 'dealership_crm_current_emp_id',
 };
 
 // Normalize Indian / International phone numbers to clean 10-digit format
@@ -34,7 +34,8 @@ class CRMService {
   private getItem<T>(key: string, fallback: T): T {
     if (!this.isBrowser) return fallback;
     try {
-      const item = localStorage.getItem(key);
+      const legacyKey = key.replace('dealership_crm_', 'autobourn_crm_');
+      const item = localStorage.getItem(key) || (legacyKey !== key ? localStorage.getItem(legacyKey) : null);
       if (!item) {
         localStorage.setItem(key, JSON.stringify(fallback));
         return fallback;
@@ -337,7 +338,7 @@ class CRMService {
         car_id: extra.test_drive.car_id,
         car_name: extra.test_drive.car_name,
         scheduled_at: extra.test_drive.scheduled_at,
-        location: extra.test_drive.location || 'Autobourn Showroom, Velachery',
+        location: extra.test_drive.location || 'Showroom, Velachery',
         notes: 'Scheduled via Kanban pipeline transition guard',
       });
     }
@@ -635,7 +636,7 @@ class CRMService {
       car_id: payload.car_id,
       car_name: payload.car_name,
       scheduled_at: payload.scheduled_at,
-      location: payload.location || 'Autobourn Showroom, Velachery',
+      location: payload.location || 'Showroom, Velachery',
       status: 'scheduled',
       result: null,
       customer_feedback: null,

@@ -1,4 +1,4 @@
-// src/app/dashboard/crm/leads/[id]/page.tsx — Module 3: Lead Detail 360° Hub (White & Red Theme)
+// src/app/dashboard/crm/leads/[id]/page.tsx — Luxury Lead Detail 360° Profile Hub
 'use client';
 
 import { useState, useEffect, use } from 'react';
@@ -8,9 +8,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Phone, MessageCircle, Mail, MapPin, Briefcase, Car,
   Calendar, Clock, CheckCircle2, AlertTriangle, Plus,
-  User, Award, FileText, Send, Sparkles, Activity
+  User, Award, FileText, Send, Sparkles, Activity, ShieldAlert,
+  ChevronRight, ExternalLink
 } from 'lucide-react';
-import CRMNavbar from '@/components/CRMNavbar';
 import ScheduleTestDriveModal from '@/components/ScheduleTestDriveModal';
 import CompleteFollowUpModal from '@/components/CompleteFollowUpModal';
 import LostReasonModal from '@/components/LostReasonModal';
@@ -144,7 +144,7 @@ export default function LeadDetailPage({
       });
       setFuNotes('');
       setFuDate('');
-      showToast('Follow-up scheduled');
+      showToast('Follow-up task scheduled successfully');
       loadLeadHub();
     } catch (err: any) {
       alert(err.message || 'Error scheduling follow-up');
@@ -174,21 +174,31 @@ export default function LeadDetailPage({
 
   if (loading) {
     return (
-      <div className="p-16 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#E10613] border-t-transparent animate-spin" />
+      <div style={{ padding: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '3px solid #F5223B', borderTopColor: 'transparent' }} className="animate-spin" />
       </div>
     );
   }
 
   if (!lead) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h2 className="text-xl font-bold">Prospect Record Not Found</h2>
-        <p className="text-sm text-gray-500 mb-6">The lead ID {leadId} does not exist in the CRM database.</p>
+      <div style={{ maxWidth: '600px', margin: '64px auto', textAlign: 'center', padding: '32px' }}>
+        <AlertTriangle style={{ width: '48px', height: '48px', color: '#D97706', margin: '0 auto 16px' }} />
+        <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#173B67' }}>Prospect Record Not Found</h2>
+        <p style={{ fontSize: '13px', color: '#8298B8', margin: '8px 0 24px' }}>
+          The lead ID {leadId} does not exist in the CRM database.
+        </p>
         <Link
           href="/dashboard/crm/leads"
-          className="px-4 py-2 rounded-xl bg-[#E10613] text-white text-xs font-semibold"
+          style={{
+            padding: '10px 20px',
+            borderRadius: '10px',
+            backgroundColor: '#F5223B',
+            color: '#FFFFFF',
+            fontSize: '12px',
+            fontWeight: '700',
+            textDecoration: 'none',
+          }}
         >
           Return to Pipeline
         </Link>
@@ -197,568 +207,1544 @@ export default function LeadDetailPage({
   }
 
   const currentStageObj = LEAD_STAGES.find((s) => s.key === lead.lead_status);
+  const initials = lead.customer_name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto w-full">
-        {/* Back Link */}
-        <div className="mb-4">
-          <Link
-            href="/dashboard/crm/leads"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors"
+    <div
+      className="w-full min-w-0 flex flex-col overflow-x-hidden"
+      style={{
+        padding: '20px 24px',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            style={{
+              position: 'fixed',
+              top: '20px',
+              right: '24px',
+              zIndex: 9999,
+              backgroundColor: '#173B67',
+              color: '#FFFFFF',
+              padding: '10px 18px',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: '600',
+              boxShadow: '0 8px 24px rgba(23, 59, 103, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to 9-Stage Pipeline</span>
+            <CheckCircle2 style={{ width: '15px', height: '15px', color: '#10B981' }} />
+            <span>{toast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Top Navigation Ribbon: Back Link & Breadcrumb */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '16px',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
+        <Link
+          href="/dashboard/crm/leads"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '12px',
+            fontWeight: '700',
+            color: '#173B67',
+            textDecoration: 'none',
+            backgroundColor: '#FFFFFF',
+            padding: '8px 14px',
+            borderRadius: '10px',
+            border: '1px solid #EAEFF5',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:bg-[#F8FAFC]"
+        >
+          <ArrowLeft style={{ width: '14px', height: '14px', color: '#F5223B' }} />
+          <span>Back to 9-Stage Pipeline</span>
+        </Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#8298B8', fontWeight: '600' }}>
+          <Link href="/dashboard/crm/leads" style={{ color: '#8298B8', textDecoration: 'none' }} className="hover:text-[#173B67]">
+            Pipeline
           </Link>
+          <span>/</span>
+          <Link href="/dashboard/crm/customer-details" style={{ color: '#8298B8', textDecoration: 'none' }} className="hover:text-[#173B67]">
+            Prospects
+          </Link>
+          <span>/</span>
+          <strong style={{ color: '#173B67' }}>{lead.customer_name}</strong>
         </div>
+      </div>
 
-        {/* 360° Profile Header Card */}
-        <div className="rounded-3xl bg-white border border-gray-200/90 p-6 sm:p-8 shadow-xs mb-8">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            {/* Left: Customer Profile */}
-            <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-                  {lead.customer_name}
-                </h1>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-bold capitalize">
-                  {SOURCE_LABELS[lead.source] || lead.source}
-                </span>
-                {lead.wa_greeting_sent && (
-                  <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> WhatsApp Greeting Sent
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 pt-1">
-                <span className="flex items-center gap-1 font-mono font-bold text-gray-800">
-                  <Phone className="w-3.5 h-3.5 text-blue-600" />
-                  <span>+91 {lead.phone}</span>
-                </span>
-                {lead.email && (
-                  <span className="flex items-center gap-1">
-                    <Mail className="w-3.5 h-3.5 text-gray-400" />
-                    <span>{lead.email}</span>
-                  </span>
-                )}
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                  <span>{lead.city || 'Chennai'}, {lead.state || 'Tamil Nadu'}</span>
-                </span>
-                {lead.occupation && (
-                  <span className="flex items-center gap-1">
-                    <Briefcase className="w-3.5 h-3.5 text-gray-400" />
-                    <span>{lead.occupation}</span>
-                  </span>
-                )}
-              </div>
-
-              {/* Vehicle & Target Budget */}
-              <div className="flex flex-wrap items-center gap-6 pt-3 text-xs">
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-bold">Interested Vehicle</span>
-                  <span className="font-extrabold text-gray-900 text-sm flex items-center gap-1.5">
-                    <Car className="w-4 h-4 text-[#E10613]" />
-                    {lead.interested_car || 'Luxury Vehicle'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-bold">Target Budget</span>
-                  <span className="font-black text-[#E10613] text-sm">
-                    {formatBudget(lead.budget)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block text-[10px] uppercase font-bold">Assigned RM</span>
-                  <span className="font-bold text-gray-800">
-                    {lead.assigned_employee?.name || 'Unassigned Executive'}
-                  </span>
-                </div>
-              </div>
+      {/* Customer Master Header Card */}
+      <div
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          border: '1px solid #EAEFF5',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+          padding: '22px 26px',
+          marginBottom: '20px',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Tier 1: Customer Identity, Badges, Direct Actions & Pipeline Stage */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px',
+            paddingBottom: '18px',
+            borderBottom: '1px solid #F0F4F8',
+          }}
+        >
+          {/* Identity & Badges */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '14px',
+                backgroundColor: '#FFF0F2',
+                border: '1px solid rgba(245,34,59,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px',
+                fontWeight: '900',
+                color: '#F5223B',
+                flexShrink: 0,
+              }}
+            >
+              {initials}
             </div>
 
-            {/* Right: Triggers & Stage Dropdown */}
-            <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3 w-full lg:w-auto">
-              <div className="flex items-center gap-2">
-                <a
-                  href={`tel:${lead.phone}`}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all"
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#173B67', letterSpacing: '-0.5px', margin: 0 }}>
+                  {lead.customer_name}
+                </h1>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                    backgroundColor: '#EFF6FF',
+                    color: '#2563EB',
+                    border: '1px solid #DBEAFE',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
                 >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Call Prospect</span>
-                </a>
-
-                <a
-                  href={`https://wa.me/91${lead.phone.slice(-10)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>Launch WhatsApp</span>
-                </a>
+                  {SOURCE_LABELS[lead.source] || lead.source} Inbound
+                </span>
+                {lead.wa_greeting_sent && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      padding: '3px 10px',
+                      borderRadius: '9999px',
+                      backgroundColor: '#ECFDF5',
+                      color: '#059669',
+                      border: '1px solid #A7F3D0',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    <CheckCircle2 style={{ width: '12px', height: '12px' }} />
+                    WhatsApp Greeting Sent
+                  </span>
+                )}
               </div>
+              <p style={{ fontSize: '12px', color: '#8298B8', margin: '4px 0 0 0', fontWeight: '500' }}>
+                Lead ID: <strong style={{ color: '#475569' }}>{lead.id}</strong> • Ingestion: {timeAgo(lead.created_at)}
+              </p>
+            </div>
+          </div>
 
-              {/* Stage Switcher */}
-              <div className="w-full sm:w-auto">
-                <label className="text-[10px] text-gray-500 block mb-1 uppercase font-bold text-right">
-                  Pipeline Stage
-                </label>
-                <select
-                  value={lead.lead_status}
-                  onChange={(e) => handleStageChange(e.target.value as LeadStatus)}
-                  className="w-full sm:w-56 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none cursor-pointer"
-                >
-                  {LEAD_STAGES.map((s) => (
-                    <option key={s.key} value={s.key}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          {/* Action Buttons & Stage Dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <a
+              href={`tel:${lead.phone}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                borderRadius: '10px',
+                backgroundColor: '#EFF6FF',
+                border: '1px solid #DBEAFE',
+                color: '#2563EB',
+                fontSize: '12px',
+                fontWeight: '700',
+                textDecoration: 'none',
+                transition: 'all 0.15s ease',
+              }}
+              className="hover:bg-blue-100 hover:scale-102"
+              title="Call Prospect"
+            >
+              <Phone style={{ width: '14px', height: '14px' }} />
+              <span>Call Prospect</span>
+            </a>
+
+            <a
+              href={`https://wa.me/91${lead.phone.replace(/\D/g, '').slice(-10)}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 16px',
+                borderRadius: '10px',
+                backgroundColor: '#ECFDF5',
+                border: '1px solid #A7F3D0',
+                color: '#059669',
+                fontSize: '12px',
+                fontWeight: '700',
+                textDecoration: 'none',
+                transition: 'all 0.15s ease',
+              }}
+              className="hover:bg-emerald-100 hover:scale-102"
+              title="Launch WhatsApp Chat"
+            >
+              <MessageCircle style={{ width: '14px', height: '14px' }} />
+              <span>Launch WhatsApp</span>
+            </a>
+
+            {/* Pipeline Stage Switcher */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 12px',
+                borderRadius: '10px',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #EAEFF5',
+              }}
+            >
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: currentStageObj?.color || '#F5223B',
+                }}
+              />
+              <span style={{ fontSize: '11px', color: '#8298B8', fontWeight: '700', textTransform: 'uppercase' }}>
+                Stage:
+              </span>
+              <select
+                value={lead.lead_status}
+                onChange={(e) => handleStageChange(e.target.value as LeadStatus)}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: '800',
+                  color: '#173B67',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+              >
+                {LEAD_STAGES.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
 
-        {/* Action Tabs Bar */}
-        <div className="flex items-center gap-2 border-b border-gray-200 mb-6 overflow-x-auto text-xs font-bold">
-          <button
-            onClick={() => setActiveTab('timeline')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'timeline'
-                ? 'border-[#E10613] text-[#E10613]'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
+        {/* Tier 2: 4 Aligned Customer Dossier Metric Columns */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '16px',
+            paddingTop: '18px',
+          }}
+        >
+          {/* Col 1: Contact Details */}
+          <div
+            style={{
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              border: '1px solid #EAEFF5',
+              padding: '12px 16px',
+            }}
           >
-            <Activity className="w-4 h-4 text-[#E10613]" />
-            <span>Activity Timeline ({activityLogs.length + notes.length})</span>
-          </button>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: '#8298B8', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
+              Contact Details
+            </span>
+            <div style={{ fontFamily: 'ui-monospace, monospace', fontWeight: '800', color: '#173B67', fontSize: '14px' }}>
+              +91 {lead.phone}
+            </div>
+            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={lead.email || ''}>
+              {lead.email || 'No email registered'}
+            </div>
+            <div style={{ fontSize: '11px', color: '#8298B8', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <MapPin style={{ width: '11px', height: '11px', color: '#94A3B8' }} />
+              <span>{lead.city || 'Chennai'}, {lead.state || 'Tamil Nadu'}</span>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('followups')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'followups'
-                ? 'border-[#E10613] text-[#E10613]'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
+          {/* Col 2: Vehicle Preference */}
+          <div
+            style={{
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              border: '1px solid #EAEFF5',
+              padding: '12px 16px',
+            }}
           >
-            <Calendar className="w-4 h-4 text-amber-500" />
-            <span>Follow-up Tasks ({followUps.length})</span>
-          </button>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: '#8298B8', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
+              Interested Vehicle
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Car style={{ width: '15px', height: '15px', color: '#F5223B', flexShrink: 0 }} />
+              <strong style={{ fontSize: '14px', fontWeight: '800', color: '#173B67', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {lead.interested_car || 'Luxury Vehicle'}
+              </strong>
+            </div>
+            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', paddingLeft: '21px' }}>
+              {lead.preferred_brand || 'Luxury Segment'}
+            </div>
+            <div style={{ fontSize: '11px', color: '#8298B8', marginTop: '2px', paddingLeft: '21px' }}>
+              Occ: {lead.occupation || 'Executive / Business'}
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('notes')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'notes'
-                ? 'border-[#E10613] text-[#E10613]'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
+          {/* Col 3: Target Budget & Timeline */}
+          <div
+            style={{
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              border: '1px solid #EAEFF5',
+              padding: '12px 16px',
+            }}
           >
-            <FileText className="w-4 h-4 text-indigo-500" />
-            <span>Team Notes ({notes.length})</span>
-          </button>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: '#8298B8', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
+              Target Budget & Timeline
+            </span>
+            <div style={{ fontSize: '18px', fontWeight: '900', color: '#F5223B' }}>
+              {formatBudget(lead.budget)}
+            </div>
+            <div style={{ marginTop: '4px' }}>
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  color: '#475569',
+                  backgroundColor: '#EAEFF5',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  display: 'inline-block',
+                }}
+              >
+                Timeline: {lead.purchase_timeline || 'Within 1 week'}
+              </span>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveTab('testdrives')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'testdrives'
-                ? 'border-[#E10613] text-[#E10613]'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
+          {/* Col 4: Assigned RM */}
+          <div
+            style={{
+              backgroundColor: '#F8FAFC',
+              borderRadius: '12px',
+              border: '1px solid #EAEFF5',
+              padding: '12px 16px',
+            }}
           >
-            <Car className="w-4 h-4 text-purple-500" />
-            <span>Test Drives ({testDrives.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('booking')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-all whitespace-nowrap ${
-              activeTab === 'booking'
-                ? 'border-[#E10613] text-[#E10613]'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            <Award className="w-4 h-4 text-emerald-500" />
-            <span>Booking & Financials ({bookings.length})</span>
-          </button>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: '#8298B8', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'block', marginBottom: '4px' }}>
+              Assigned RM
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <User style={{ width: '15px', height: '15px', color: '#173B67' }} />
+              <strong style={{ fontSize: '14px', fontWeight: '800', color: '#173B67' }}>
+                {lead.assigned_employee?.name || 'Unassigned Executive'}
+              </strong>
+            </div>
+            <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px', paddingLeft: '21px' }}>
+              ID: {lead.assigned_employee?.employee_id || 'AB1002'} • Senior RM
+            </div>
+            <div style={{ fontSize: '11px', color: '#059669', marginTop: '2px', paddingLeft: '21px', fontWeight: '600' }}>
+              Dedicated Client Manager
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Tab 1: Unified Activity Timeline */}
-        {activeTab === 'timeline' && (
-          <div className="space-y-6 max-w-4xl">
-            {/* Quick Note Input Box */}
-            <form onSubmit={handleAddNote} className="p-4 rounded-2xl bg-white border border-gray-200 shadow-xs">
-              <label className="block text-xs font-bold text-gray-900 mb-2">
-                Quick Log / Add Activity Note
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newNoteText}
-                  onChange={(e) => setNewNoteText(e.target.value)}
-                  placeholder="Record customer conversation, requirement changes, or showroom visit notes..."
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none focus:border-[#E10613] focus:bg-white"
-                />
-                <button
-                  type="submit"
-                  disabled={savingNote || !newNoteText.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-[#E10613] hover:bg-[#c70511] text-white text-xs font-bold transition-all disabled:opacity-50"
-                >
-                  {savingNote ? 'Saving...' : 'Add Note'}
-                </button>
-              </div>
-            </form>
+      {/* Action Tabs Bar */}
+      <div
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '14px',
+          border: '1px solid #EAEFF5',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+          padding: '6px 10px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          overflowX: 'auto',
+        }}
+      >
+        <button
+          onClick={() => setActiveTab('timeline')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: activeTab === 'timeline' ? '1px solid rgba(245,34,59,0.2)' : '1px solid transparent',
+            backgroundColor: activeTab === 'timeline' ? '#FFF0F2' : 'transparent',
+            color: activeTab === 'timeline' ? '#F5223B' : '#64748B',
+            fontSize: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:text-[#173B67]"
+        >
+          <Activity style={{ width: '15px', height: '15px', color: activeTab === 'timeline' ? '#F5223B' : '#8298B8' }} />
+          <span>Activity Timeline ({activityLogs.length + notes.length})</span>
+        </button>
 
-            {/* Chronological Stream */}
-            <div className="relative pl-6 border-l-2 border-gray-200 space-y-5 py-2">
-              {activityLogs.map((log) => (
-                <div key={log.id} className="relative group">
-                  <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-[#E10613] border-4 border-[#F8F9FA]" />
-                  <div className="p-4 rounded-2xl bg-white border border-gray-200 text-xs shadow-xs">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-gray-900 text-sm">{log.action}</span>
-                      <span className="text-gray-400 text-[11px]">{timeAgo(log.created_at)}</span>
+        <button
+          onClick={() => setActiveTab('followups')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: activeTab === 'followups' ? '1px solid rgba(245,34,59,0.2)' : '1px solid transparent',
+            backgroundColor: activeTab === 'followups' ? '#FFF0F2' : 'transparent',
+            color: activeTab === 'followups' ? '#F5223B' : '#64748B',
+            fontSize: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:text-[#173B67]"
+        >
+          <Calendar style={{ width: '15px', height: '15px', color: activeTab === 'followups' ? '#F5223B' : '#D97706' }} />
+          <span>Follow-up Tasks ({followUps.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('notes')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: activeTab === 'notes' ? '1px solid rgba(245,34,59,0.2)' : '1px solid transparent',
+            backgroundColor: activeTab === 'notes' ? '#FFF0F2' : 'transparent',
+            color: activeTab === 'notes' ? '#F5223B' : '#64748B',
+            fontSize: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:text-[#173B67]"
+        >
+          <FileText style={{ width: '15px', height: '15px', color: activeTab === 'notes' ? '#F5223B' : '#6366F1' }} />
+          <span>Team Notes ({notes.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('testdrives')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: activeTab === 'testdrives' ? '1px solid rgba(245,34,59,0.2)' : '1px solid transparent',
+            backgroundColor: activeTab === 'testdrives' ? '#FFF0F2' : 'transparent',
+            color: activeTab === 'testdrives' ? '#F5223B' : '#64748B',
+            fontSize: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:text-[#173B67]"
+        >
+          <Car style={{ width: '15px', height: '15px', color: activeTab === 'testdrives' ? '#F5223B' : '#7C3AED' }} />
+          <span>Test Drives ({testDrives.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('booking')}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: activeTab === 'booking' ? '1px solid rgba(245,34,59,0.2)' : '1px solid transparent',
+            backgroundColor: activeTab === 'booking' ? '#FFF0F2' : 'transparent',
+            color: activeTab === 'booking' ? '#F5223B' : '#64748B',
+            fontSize: '12px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease',
+          }}
+          className="hover:text-[#173B67]"
+        >
+          <Award style={{ width: '15px', height: '15px', color: activeTab === 'booking' ? '#F5223B' : '#059669' }} />
+          <span>Booking & Financials ({bookings.length})</span>
+        </button>
+      </div>
+
+      {/* 2-Column Responsive Workspace: Active Tab Content (70%) + Quick Action & Dossier Panel (30%) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) 340px',
+          gap: '20px',
+          alignItems: 'start',
+        }}
+        className="grid-cols-1 lg:grid-cols-[1fr_340px]"
+      >
+        {/* Left Column: Tab Content */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0 }}>
+          {/* TAB 1: Unified Activity Timeline */}
+          {activeTab === 'timeline' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Quick Log Input Box */}
+              <form
+                onSubmit={handleAddNote}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '16px 20px',
+                  boxSizing: 'border-box',
+                }}
+              >
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#173B67', marginBottom: '8px' }}>
+                  Quick Log / Add Activity Note
+                </label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    value={newNoteText}
+                    onChange={(e) => setNewNoteText(e.target.value)}
+                    placeholder="Record customer conversation, requirement changes, or showroom visit notes..."
+                    style={{
+                      flex: 1,
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #EAEFF5',
+                      borderRadius: '10px',
+                      padding: '10px 14px',
+                      fontSize: '12px',
+                      color: '#173B67',
+                      outline: 'none',
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={savingNote || !newNoteText.trim()}
+                    style={{
+                      backgroundColor: '#F5223B',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '10px 20px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(245,34,59,0.22)',
+                      transition: 'all 0.15s ease',
+                      whiteSpace: 'nowrap',
+                      opacity: savingNote || !newNoteText.trim() ? 0.6 : 1,
+                    }}
+                    className="hover:bg-[#E0142C]"
+                  >
+                    {savingNote ? 'Saving...' : 'Add Note'}
+                  </button>
+                </div>
+              </form>
+
+              {/* Chronological Stream */}
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                }}
+              >
+                <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#173B67', margin: 0, paddingBottom: '10px', borderBottom: '1px solid #F0F4F8' }}>
+                  Chronological Timeline History
+                </h3>
+
+                {activityLogs.length === 0 && notes.length === 0 && (
+                  <div style={{ padding: '32px', textAlign: 'center', color: '#8298B8', fontSize: '12px' }}>
+                    No recorded activities yet. Use the log box above to record conversations.
+                  </div>
+                )}
+
+                {activityLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      borderRadius: '12px',
+                      border: '1px solid #EAEFF5',
+                      padding: '14px 18px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#F5223B' }} />
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#173B67' }}>{log.action}</span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#8298B8', fontWeight: '500' }}>
+                        {timeAgo(log.created_at)}
+                      </span>
                     </div>
-                    <p className="text-gray-700 leading-relaxed">{log.details}</p>
-                    <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400">
-                      <span>Logged by: {log.employee?.name || 'System CRM'}</span>
+                    <p style={{ fontSize: '12px', color: '#475569', margin: '4px 0 0 0', lineHeight: 1.5 }}>
+                      {log.details}
+                    </p>
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #EAEFF5', display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94A3B8' }}>
+                      <span>Logged by: <strong style={{ color: '#64748B' }}>{log.employee?.name || 'System CRM'}</strong></span>
                       <span>{new Date(log.created_at).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              {notes.map((n) => (
-                <div key={n.id} className="relative group">
-                  <div className="absolute -left-[31px] top-1.5 w-3.5 h-3.5 rounded-full bg-blue-500 border-4 border-[#F8F9FA]" />
-                  <div className="p-4 rounded-2xl bg-white border border-gray-200 text-xs shadow-xs">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-blue-700">Customer Note</span>
-                      <span className="text-gray-400 text-[11px]">{timeAgo(n.created_at)}</span>
+                {notes.map((n) => (
+                  <div
+                    key={n.id}
+                    style={{
+                      backgroundColor: '#EFF6FF',
+                      borderRadius: '12px',
+                      border: '1px solid #DBEAFE',
+                      padding: '14px 18px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2563EB' }} />
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#1D4ED8' }}>Customer Note</span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#8298B8', fontWeight: '500' }}>
+                        {timeAgo(n.created_at)}
+                      </span>
                     </div>
-                    <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{n.note}</p>
-                    <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-400">
-                      <span>Recorded by: {n.employee?.name || 'Executive'}</span>
+                    <p style={{ fontSize: '12px', color: '#1E293B', margin: '4px 0 0 0', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                      {n.note}
+                    </p>
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #DBEAFE', display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748B' }}>
+                      <span>Recorded by: <strong style={{ color: '#1E293B' }}>{n.employee?.name || 'Executive'}</strong></span>
                       <span>{new Date(n.created_at).toLocaleString('en-IN')}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 2: Follow-ups */}
-        {activeTab === 'followups' && (
-          <div className="space-y-6 max-w-4xl">
-            {/* Schedule Follow-up Box */}
-            <form onSubmit={handleScheduleFollowUp} className="p-5 rounded-2xl bg-white border border-gray-200 shadow-xs space-y-4">
-              <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <Plus className="w-4 h-4 text-[#E10613]" />
-                <span>Schedule New Follow-up Task</span>
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-[11px] text-gray-600 mb-1 font-semibold">Task Type</label>
-                  <select
-                    value={fuType}
-                    onChange={(e) => setFuType(e.target.value as any)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                  >
-                    {Object.entries(FOLLOW_UP_TYPE_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>{label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] text-gray-600 mb-1 font-semibold">Date & Time</label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={fuDate}
-                    onChange={(e) => setFuDate(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] text-gray-600 mb-1 font-semibold">Priority</label>
-                  <select
-                    value={fuPriority}
-                    onChange={(e) => setFuPriority(e.target.value as any)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                  >
-                    <option value="high">High</option>
-                    <option value="normal">Normal</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[11px] text-gray-600 mb-1 font-semibold">Task Notes</label>
-                <input
-                  type="text"
-                  value={fuNotes}
-                  onChange={(e) => setFuNotes(e.target.value)}
-                  placeholder="e.g. Call to discuss finance quotation and down payment terms"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
-                >
-                  Schedule Follow-up
-                </button>
-              </div>
-            </form>
-
-            {/* List */}
-            <div className="space-y-3">
-              {followUps.map((fu) => (
-                <div
-                  key={fu.id}
-                  className="p-4 rounded-2xl bg-white border border-gray-200 flex items-center justify-between text-xs gap-4 shadow-xs"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-gray-900 text-sm uppercase">
-                        {FOLLOW_UP_TYPE_LABELS[fu.follow_up_type]}
-                      </span>
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                          fu.status === 'completed'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : fu.status === 'missed'
-                            ? 'bg-red-50 text-red-700 border border-red-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}
-                      >
-                        {fu.status}
-                      </span>
-                    </div>
-                    <p className="text-gray-700">{fu.notes}</p>
-                    <span className="text-[11px] text-gray-400 block font-medium">
-                      Scheduled for: {new Date(fu.scheduled_at).toLocaleString('en-IN')}
-                    </span>
-                  </div>
-
-                  {fu.status === 'pending' && (
-                    <button
-                      onClick={() => setCompletingFollowUp(fu)}
-                      className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs whitespace-nowrap shadow-xs"
-                    >
-                      Complete & Next
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Customer Notes */}
-        {activeTab === 'notes' && (
-          <div className="space-y-6 max-w-4xl">
-            <form onSubmit={handleAddNote} className="p-4 rounded-2xl bg-white border border-gray-200 shadow-xs space-y-3">
-              <label className="block text-xs font-bold text-gray-900">Add Team Note</label>
-              <textarea
-                rows={3}
-                value={newNoteText}
-                onChange={(e) => setNewNoteText(e.target.value)}
-                placeholder="Log internal sales notes, special requests, trade-in car condition..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 focus:outline-none focus:bg-white"
-              />
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={savingNote || !newNoteText.trim()}
-                  className="px-5 py-2 rounded-xl bg-[#E10613] hover:bg-[#c70511] text-white font-bold text-xs disabled:opacity-50"
-                >
-                  Save Note
-                </button>
-              </div>
-            </form>
-
-            <div className="space-y-3">
-              {notes.map((n) => (
-                <div key={n.id} className="p-4 rounded-2xl bg-white border border-gray-200 text-xs shadow-xs">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-gray-900">{n.employee?.name || 'Sales Desk'}</span>
-                    <span className="text-gray-400 text-[10px]">{timeAgo(n.created_at)}</span>
-                  </div>
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{n.note}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 4: Test Drives */}
-        {activeTab === 'testdrives' && (
-          <div className="space-y-6 max-w-4xl">
-            <div className="flex justify-between items-center">
-              <div>
-                <h4 className="text-base font-bold text-gray-900">Test Drive Records</h4>
-                <p className="text-xs text-gray-500">Showroom and home test drive schedules with collision guard</p>
-              </div>
-              <button
-                onClick={() => setIsTestDriveModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Schedule Test Drive</span>
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {testDrives.map((td) => (
-                <div key={td.id} className="p-4 rounded-2xl bg-white border border-gray-200 text-xs space-y-2 shadow-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900 text-sm">{td.car_name}</span>
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                        td.status === 'completed'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-purple-50 text-purple-700 border border-purple-200'
-                      }`}
-                    >
-                      {td.status}
-                    </span>
-                  </div>
-                  <p className="text-gray-700">Location: {td.location || 'Showroom'}</p>
-                  <p className="text-gray-400 text-[11px]">
-                    Date: {new Date(td.scheduled_at).toLocaleString('en-IN')}
-                  </p>
-                  {td.customer_feedback && (
-                    <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800">
-                      Feedback: {td.customer_feedback} (Outcome: {td.result})
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Booking & Financials */}
-        {activeTab === 'booking' && (
-          <div className="space-y-6 max-w-4xl">
-            {bookings.length > 0 ? (
-              <div className="space-y-4">
-                {bookings.map((bk) => (
-                  <div key={bk.id} className="p-6 rounded-2xl bg-white border border-gray-200 space-y-4 text-xs shadow-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-bold text-gray-900">{bk.car_name}</span>
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold uppercase text-[11px]">
-                        Payment: {bk.payment_status}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                      <div>
-                        <span className="text-gray-500 block">Token Advance</span>
-                        <span className="font-bold text-gray-900 text-sm">
-                          ₹{bk.booking_amount?.toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500 block">Total Deal Amount</span>
-                        <span className="font-bold text-gray-900 text-sm">
-                          ₹{bk.total_amount?.toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500 block">Delivery Date</span>
-                        <span className="font-bold text-gray-900 text-sm">
-                          {bk.expected_delivery || 'TBD'}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-gray-500 block">RTO / Finance</span>
-                        <span className="font-bold text-emerald-700 text-sm capitalize">
-                          {bk.finance_status} / {bk.rto_status}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-gray-50 text-gray-700">
-                      {bk.notes || 'Booking active. Vehicle inventory reserved.'}
                     </div>
                   </div>
                 ))}
               </div>
-            ) : (
-              <form onSubmit={handleCreateBooking} className="p-6 rounded-2xl bg-white border border-gray-200 space-y-4 shadow-xs">
-                <h4 className="text-base font-bold text-gray-900">Record Booking & Token Advance</h4>
-                <p className="text-xs text-gray-500">
-                  Reserves vehicle in inventory and initiates delivery milestone checklist.
-                </p>
+            </div>
+          )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* TAB 2: Follow-up Tasks */}
+          {activeTab === 'followups' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Schedule Follow-up Form */}
+              <form
+                onSubmit={handleScheduleFollowUp}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 22px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Plus style={{ width: '16px', height: '16px', color: '#F5223B' }} />
+                  <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#173B67', margin: 0 }}>
+                    Schedule New Follow-up Task
+                  </h4>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Token Advance Amount (INR)</label>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                      Task Type
+                    </label>
+                    <select
+                      value={fuType}
+                      onChange={(e) => setFuType(e.target.value as any)}
+                      style={{
+                        width: '100%',
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid #EAEFF5',
+                        borderRadius: '10px',
+                        padding: '8px 12px',
+                        fontSize: '12px',
+                        color: '#173B67',
+                        fontWeight: '600',
+                        outline: 'none',
+                      }}
+                    >
+                      {Object.entries(FOLLOW_UP_TYPE_LABELS).map(([k, label]) => (
+                        <option key={k} value={k}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                      Date & Time
+                    </label>
                     <input
-                      type="text"
+                      type="datetime-local"
                       required
-                      value={tokenAmount}
-                      onChange={(e) => setTokenAmount(e.target.value)}
-                      placeholder="10,00,000"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
+                      value={fuDate}
+                      onChange={(e) => setFuDate(e.target.value)}
+                      style={{
+                        width: '100%',
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid #EAEFF5',
+                        borderRadius: '10px',
+                        padding: '8px 12px',
+                        fontSize: '12px',
+                        color: '#173B67',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Total Agreed Deal Amount (INR)</label>
-                    <input
-                      type="text"
-                      required
-                      value={totalDealAmount}
-                      onChange={(e) => setTotalDealAmount(e.target.value)}
-                      placeholder="1,35,00,000"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">Expected Delivery Date</label>
-                    <input
-                      type="date"
-                      value={deliveryDate}
-                      onChange={(e) => setDeliveryDate(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none"
-                    />
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                      Priority
+                    </label>
+                    <select
+                      value={fuPriority}
+                      onChange={(e) => setFuPriority(e.target.value as any)}
+                      style={{
+                        width: '100%',
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid #EAEFF5',
+                        borderRadius: '10px',
+                        padding: '8px 12px',
+                        fontSize: '12px',
+                        color: '#173B67',
+                        fontWeight: '600',
+                        outline: 'none',
+                      }}
+                    >
+                      <option value="high">High Priority</option>
+                      <option value="normal">Normal Priority</option>
+                      <option value="low">Low Priority</option>
+                    </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Deal & Delivery Ceremony Notes</label>
-                  <textarea
-                    rows={2}
-                    value={bookingNotes}
-                    onChange={(e) => setBookingNotes(e.target.value)}
-                    placeholder="Puja requested, champagne delivery ceremony, accessories installed..."
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 focus:outline-none"
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                    Task Notes & Objectives
+                  </label>
+                  <input
+                    type="text"
+                    value={fuNotes}
+                    onChange={(e) => setFuNotes(e.target.value)}
+                    placeholder="e.g. Call to discuss finance quotation, down payment terms, and trade-in evaluation"
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #EAEFF5',
+                      borderRadius: '10px',
+                      padding: '8px 12px',
+                      fontSize: '12px',
+                      color: '#173B67',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
                   />
                 </div>
 
-                <div className="flex justify-end">
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md"
+                    style={{
+                      backgroundColor: '#D97706',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '8px 18px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                    className="hover:bg-amber-700"
                   >
-                    Lock Booking & Reserve Vehicle
+                    Schedule Follow-up
                   </button>
                 </div>
               </form>
-            )}
+
+              {/* Tasks List */}
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#173B67', margin: 0, paddingBottom: '10px', borderBottom: '1px solid #F0F4F8' }}>
+                  Scheduled Tasks ({followUps.length})
+                </h4>
+
+                {followUps.length === 0 && (
+                  <div style={{ padding: '32px', textAlign: 'center', color: '#8298B8', fontSize: '12px' }}>
+                    No pending follow-ups scheduled for this client.
+                  </div>
+                )}
+
+                {followUps.map((fu) => (
+                  <div
+                    key={fu.id}
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      borderRadius: '12px',
+                      border: '1px solid #EAEFF5',
+                      padding: '14px 18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '12px',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '800', color: '#173B67' }}>
+                          {FOLLOW_UP_TYPE_LABELS[fu.follow_up_type] || fu.follow_up_type}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: '700',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            textTransform: 'uppercase',
+                            backgroundColor:
+                              fu.status === 'completed' ? '#ECFDF5' : fu.status === 'missed' ? '#FFF0F2' : '#FEF3C7',
+                            color:
+                              fu.status === 'completed' ? '#059669' : fu.status === 'missed' ? '#F5223B' : '#B45309',
+                            border: `1px solid ${
+                              fu.status === 'completed' ? '#A7F3D0' : fu.status === 'missed' ? 'rgba(245,34,59,0.2)' : '#FDE68A'
+                            }`,
+                          }}
+                        >
+                          {fu.status}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '12px', color: '#475569', margin: '2px 0 4px 0' }}>{fu.notes}</p>
+                      <span style={{ fontSize: '11px', color: '#8298B8', fontWeight: '500' }}>
+                        Scheduled for: <strong style={{ color: '#173B67' }}>{new Date(fu.scheduled_at).toLocaleString('en-IN')}</strong>
+                      </span>
+                    </div>
+
+                    {fu.status === 'pending' && (
+                      <button
+                        onClick={() => setCompletingFollowUp(fu)}
+                        style={{
+                          backgroundColor: '#059669',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '10px',
+                          padding: '8px 16px',
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          whiteSpace: 'nowrap',
+                        }}
+                        className="hover:bg-emerald-700"
+                      >
+                        Complete & Next
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: Team Notes */}
+          {activeTab === 'notes' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <form
+                onSubmit={handleAddNote}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 22px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <label style={{ fontSize: '13px', fontWeight: '800', color: '#173B67' }}>
+                  Add Internal Team Note
+                </label>
+                <textarea
+                  rows={3}
+                  value={newNoteText}
+                  onChange={(e) => setNewNoteText(e.target.value)}
+                  placeholder="Log internal sales notes, negotiation specifics, special requests, trade-in condition..."
+                  style={{
+                    backgroundColor: '#F8FAFC',
+                    border: '1px solid #EAEFF5',
+                    borderRadius: '12px',
+                    padding: '12px 14px',
+                    fontSize: '12px',
+                    color: '#173B67',
+                    outline: 'none',
+                  }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    type="submit"
+                    disabled={savingNote || !newNoteText.trim()}
+                    style={{
+                      backgroundColor: '#F5223B',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '8px 18px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      opacity: savingNote || !newNoteText.trim() ? 0.6 : 1,
+                    }}
+                    className="hover:bg-[#E0142C]"
+                  >
+                    Save Note
+                  </button>
+                </div>
+              </form>
+
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <h4 style={{ fontSize: '14px', fontWeight: '800', color: '#173B67', margin: 0, paddingBottom: '10px', borderBottom: '1px solid #F0F4F8' }}>
+                  Team Notes History ({notes.length})
+                </h4>
+
+                {notes.map((n) => (
+                  <div
+                    key={n.id}
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      borderRadius: '12px',
+                      border: '1px solid #EAEFF5',
+                      padding: '14px 18px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <strong style={{ fontSize: '13px', color: '#173B67' }}>{n.employee?.name || 'Sales Desk'}</strong>
+                      <span style={{ fontSize: '11px', color: '#8298B8' }}>{timeAgo(n.created_at)}</span>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#475569', margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                      {n.note}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: Test Drives */}
+          {activeTab === 'testdrives' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #EAEFF5',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                  padding: '20px 24px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#173B67', margin: 0 }}>
+                      Test Drive Demonstrations
+                    </h4>
+                    <p style={{ fontSize: '12px', color: '#8298B8', margin: '2px 0 0 0' }}>
+                      Track showroom and doorstep test drives with vehicle collision guards
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsTestDriveModalOpen(true)}
+                    style={{
+                      backgroundColor: '#7C3AED',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '10px',
+                      padding: '8px 16px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                    className="hover:bg-purple-700"
+                  >
+                    <Plus style={{ width: '14px', height: '14px' }} />
+                    <span>Schedule Test Drive</span>
+                  </button>
+                </div>
+
+                {testDrives.length === 0 && (
+                  <div style={{ padding: '36px', textAlign: 'center', color: '#8298B8', fontSize: '13px' }}>
+                    No test drive scheduled yet. Click &quot;Schedule Test Drive&quot; to book a vehicle.
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {testDrives.map((td) => (
+                    <div
+                      key={td.id}
+                      style={{
+                        backgroundColor: '#F8FAFC',
+                        borderRadius: '12px',
+                        border: '1px solid #EAEFF5',
+                        padding: '16px 20px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#173B67' }}>{td.car_name}</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            textTransform: 'uppercase',
+                            backgroundColor: td.status === 'completed' ? '#ECFDF5' : '#F5F3FF',
+                            color: td.status === 'completed' ? '#059669' : '#7C3AED',
+                            border: `1px solid ${td.status === 'completed' ? '#A7F3D0' : '#DDD6FE'}`,
+                          }}
+                        >
+                          {td.status}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#475569' }}>
+                        Location: <strong style={{ color: '#173B67' }}>{td.location || 'Flagship Showroom'}</strong>
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#8298B8', marginTop: '2px' }}>
+                        Scheduled: {new Date(td.scheduled_at).toLocaleString('en-IN')}
+                      </div>
+                      {td.customer_feedback && (
+                        <div
+                          style={{
+                            marginTop: '10px',
+                            padding: '10px 14px',
+                            borderRadius: '8px',
+                            backgroundColor: '#ECFDF5',
+                            border: '1px solid #A7F3D0',
+                            fontSize: '12px',
+                            color: '#065F46',
+                          }}
+                        >
+                          Feedback: &quot;{td.customer_feedback}&quot; (Outcome: {td.result})
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: Booking & Financials */}
+          {activeTab === 'booking' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {bookings.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {bookings.map((bk) => (
+                    <div
+                      key={bk.id}
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: '16px',
+                        border: '1px solid #EAEFF5',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                        padding: '22px 24px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                        <span style={{ fontSize: '16px', fontWeight: '800', color: '#173B67' }}>{bk.car_name}</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            padding: '3px 10px',
+                            borderRadius: '9999px',
+                            backgroundColor: '#ECFDF5',
+                            color: '#059669',
+                            border: '1px solid #A7F3D0',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          Payment: {bk.payment_status}
+                        </span>
+                      </div>
+
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                          gap: '12px',
+                          padding: '14px',
+                          borderRadius: '12px',
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid #EAEFF5',
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: '10px', color: '#8298B8', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                            Token Advance
+                          </span>
+                          <strong style={{ fontSize: '15px', color: '#173B67' }}>
+                            ₹{bk.booking_amount?.toLocaleString('en-IN')}
+                          </strong>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '10px', color: '#8298B8', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                            Total Deal Amount
+                          </span>
+                          <strong style={{ fontSize: '15px', color: '#F5223B' }}>
+                            ₹{bk.total_amount?.toLocaleString('en-IN')}
+                          </strong>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '10px', color: '#8298B8', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                            Expected Delivery
+                          </span>
+                          <strong style={{ fontSize: '14px', color: '#173B67' }}>
+                            {bk.expected_delivery || 'Within 7 Days'}
+                          </strong>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '10px', color: '#8298B8', textTransform: 'uppercase', fontWeight: '700', display: 'block' }}>
+                            Finance / RTO
+                          </span>
+                          <strong style={{ fontSize: '14px', color: '#059669', textTransform: 'capitalize' }}>
+                            {bk.finance_status} / {bk.rto_status}
+                          </strong>
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: '12px', fontSize: '12px', color: '#64748B' }}>
+                        {bk.notes || 'Booking confirmed. Vehicle inventory status locked.'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <form
+                  onSubmit={handleCreateBooking}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '16px',
+                    border: '1px solid #EAEFF5',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                    padding: '22px 24px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                  }}
+                >
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: '800', color: '#173B67', margin: 0 }}>
+                      Record Advance Booking & Lock Inventory
+                    </h4>
+                    <p style={{ fontSize: '12px', color: '#8298B8', margin: '2px 0 0 0' }}>
+                      Reserves vehicle in inventory and initiates handover ceremony checklist
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                        Token Advance Amount (INR)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={tokenAmount}
+                        onChange={(e) => setTokenAmount(e.target.value)}
+                        placeholder="10,00,000"
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid #EAEFF5',
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          fontSize: '12px',
+                          color: '#173B67',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                        Total Agreed Deal Amount (INR)
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={totalDealAmount}
+                        onChange={(e) => setTotalDealAmount(e.target.value)}
+                        placeholder="1,35,00,000"
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid #EAEFF5',
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          fontSize: '12px',
+                          color: '#173B67',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                        Expected Delivery Date
+                      </label>
+                      <input
+                        type="date"
+                        value={deliveryDate}
+                        onChange={(e) => setDeliveryDate(e.target.value)}
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid #EAEFF5',
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          fontSize: '12px',
+                          color: '#173B67',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: '#64748B', marginBottom: '4px' }}>
+                      Delivery Ceremony Notes & Accessories
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={bookingNotes}
+                      onChange={(e) => setBookingNotes(e.target.value)}
+                      placeholder="Puja requested, champagne delivery ceremony, accessories package installed..."
+                      style={{
+                        width: '100%',
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid #EAEFF5',
+                        borderRadius: '10px',
+                        padding: '10px 12px',
+                        fontSize: '12px',
+                        color: '#173B67',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      type="submit"
+                      style={{
+                        backgroundColor: '#059669',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '10px 22px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(5,150,105,0.22)',
+                      }}
+                      className="hover:bg-emerald-700"
+                    >
+                      Lock Booking & Reserve Vehicle
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Quick Actions & Prospect Intelligence Dossier */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Quick Action Panel */}
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid #EAEFF5',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+              padding: '20px',
+              boxSizing: 'border-box',
+            }}
+          >
+            <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#173B67', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Quick Pipeline Actions
+            </h4>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                onClick={() => {
+                  setActiveTab('followups');
+                }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: '#FFFBEB',
+                  border: '1px solid #FDE68A',
+                  color: '#B45309',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                }}
+                className="hover:bg-amber-100"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Calendar style={{ width: '15px', height: '15px' }} />
+                  <span>Schedule Callback</span>
+                </div>
+                <ChevronRight style={{ width: '14px', height: '14px' }} />
+              </button>
+
+              <button
+                onClick={() => setIsTestDriveModalOpen(true)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: '#F5F3FF',
+                  border: '1px solid #EDE9FE',
+                  color: '#7C3AED',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                }}
+                className="hover:bg-purple-100"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Car style={{ width: '15px', height: '15px' }} />
+                  <span>Book Test Drive</span>
+                </div>
+                <ChevronRight style={{ width: '14px', height: '14px' }} />
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveTab('booking');
+                }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: '#ECFDF5',
+                  border: '1px solid #A7F3D0',
+                  color: '#059669',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                }}
+                className="hover:bg-emerald-100"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Award style={{ width: '15px', height: '15px' }} />
+                  <span>Record Booking Advance</span>
+                </div>
+                <ChevronRight style={{ width: '14px', height: '14px' }} />
+              </button>
+
+              <button
+                onClick={() => setIsLostModalOpen(true)}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  backgroundColor: '#FFF0F2',
+                  border: '1px solid rgba(245,34,59,0.2)',
+                  color: '#F5223B',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                }}
+                className="hover:bg-red-100"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShieldAlert style={{ width: '15px', height: '15px' }} />
+                  <span>Mark Deal as Lost</span>
+                </div>
+                <ChevronRight style={{ width: '14px', height: '14px' }} />
+              </button>
+            </div>
           </div>
-        )}
+
+          {/* Prospect Dossier Summary Card */}
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              border: '1px solid #EAEFF5',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+              padding: '20px',
+              boxSizing: 'border-box',
+            }}
+          >
+            <h4 style={{ fontSize: '13px', fontWeight: '800', color: '#173B67', margin: '0 0 12px 0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Prospect Dossier
+            </h4>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #F0F4F8' }}>
+                <span style={{ color: '#8298B8' }}>Customer Status:</span>
+                <strong style={{ color: '#173B67', textTransform: 'capitalize' }}>
+                  {currentStageObj?.label || lead.lead_status}
+                </strong>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #F0F4F8' }}>
+                <span style={{ color: '#8298B8' }}>Acquisition Channel:</span>
+                <strong style={{ color: '#173B67' }}>
+                  {SOURCE_LABELS[lead.source] || lead.source}
+                </strong>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #F0F4F8' }}>
+                <span style={{ color: '#8298B8' }}>WhatsApp Engagement:</span>
+                <strong style={{ color: lead.wa_greeting_sent ? '#059669' : '#8298B8' }}>
+                  {lead.wa_greeting_sent ? 'Automated Welcome Sent' : 'Pending'}
+                </strong>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #F0F4F8' }}>
+                <span style={{ color: '#8298B8' }}>City & State:</span>
+                <strong style={{ color: '#173B67' }}>
+                  {lead.city || 'Chennai'}, {lead.state || 'Tamil Nadu'}
+                </strong>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #F0F4F8' }}>
+                <span style={{ color: '#8298B8' }}>Occupation:</span>
+                <strong style={{ color: '#173B67' }}>
+                  {lead.occupation || 'Executive'}
+                </strong>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#8298B8' }}>Last Updated:</span>
+                <strong style={{ color: '#173B67' }}>
+                  {timeAgo(lead.updated_at || lead.created_at)}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Modals */}
       <ScheduleTestDriveModal
@@ -803,21 +1789,6 @@ export default function LeadDetailPage({
         }}
         onClose={() => setCompletingFollowUp(null)}
       />
-
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 right-6 z-50 bg-white border border-gray-200 text-gray-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-semibold"
-          >
-            <div className="w-2.5 h-2.5 rounded-full bg-[#E10613]" />
-            <span>{toast}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

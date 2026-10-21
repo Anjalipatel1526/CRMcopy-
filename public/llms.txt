@@ -1,14 +1,14 @@
-# AUTOBOURN Cars
+# Luxury Dealership Cars
 
 > Premium pre-owned luxury car dealership in Chennai. Discover certified Mercedes-Benz, BMW, Audi, Jaguar, Volvo, Land Rover, and Lexus cars with a comprehensive 200+ point quality inspection, easy EMI financing, and vehicle exchange options.
 
 ## Core Resources
 
-- [Official Website](https://www.autobourncars.com): Home page for AUTOBOURN Cars.
-- [Live Inventory](https://www.autobourncars.com/inventory): Real-time catalog of certified pre-owned luxury cars.
-- [About Us](https://www.autobourncars.com/about): Business overview, mission, and leadership info.
-- [Contact Details](https://www.autobourncars.com/contact): Location address, official phone number, and showroom inquiries.
-- [Sell Your Car](https://www.autobourncars.com/sell): Evaluate, sell, or trade in your luxury car.
+- [Official Website](https://www.luxurycarsdealership.com): Home page for Luxury Dealership Cars.
+- [Live Inventory](https://www.luxurycarsdealership.com/inventory): Real-time catalog of certified pre-owned luxury cars.
+- [About Us](https://www.luxurycarsdealership.com/about): Business overview, mission, and leadership info.
+- [Contact Details](https://www.luxurycarsdealership.com/contact): Location address, official phone number, and showroom inquiries.
+- [Sell Your Car](https://www.luxurycarsdealership.com/sell): Evaluate, sell, or trade in your luxury car.
 
 ## Showroom & Business Info
 

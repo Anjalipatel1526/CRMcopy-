@@ -1,7 +1,7 @@
-# AUTO BOURN — CRM Implementation Plan
+# Dealership CRM — Implementation Plan
 
 ## 1. Executive Summary & Vision
-AUTO BOURN Cars is a premier pre-owned luxury automobile dealership. The Customer Relationship Management (CRM) platform is designed to manage the high-touch, consultative sales lifecycle of luxury car buyers—from first inquiry to test drive, financing, delivery, and post-sale retention.
+This platform is a premier pre-owned luxury automobile dealership Customer Relationship Management (CRM) platform designed to manage the high-touch, consultative sales lifecycle of luxury car buyers—from first inquiry to test drive, financing, delivery, and post-sale retention.
 
 ```mermaid
 graph LR
@@ -74,19 +74,23 @@ erDiagram
     CARS ||--o{ BOOKINGS : "allocated_to"
 ```
 
-### 3.2 Lead Pipeline & Stages
+### 3.2 Lead Pipeline & Stages (8-Stage Dual-Row Architecture)
 
+#### Phase 1: Ingestion & Qualification (First 4)
 | Stage Key | Label | Color | Criteria & Action Required |
 |---|---|---|---|
-| `new` | New Lead | `#6366f1` | Inbound inquiry created; awaiting first contact within 15 mins. |
-| `contacted` | Contacted | `#3b82f6` | Initial call or message placed; requirement gathering in progress. |
-| `interested` | Interested | `#06b6d4` | Customer confirmed vehicle preference (Brand/Budget/Fuel). |
-| `follow_up_pending` | Follow-up Pending | `#f59e0b` | Specific follow-up scheduled (callback requested, budget check). |
-| `test_drive_scheduled` | Test Drive Scheduled | `#8b5cf6` | Date, time, car, and showroom/home location locked. |
-| `negotiation` | Negotiation | `#ec4899` | Pricing discussion, trade-in valuation, or finance calculation. |
-| `booking_done` | Booking Done | `#22c55e` | Advance token received; vehicle reserved. |
-| `sold` | Sold | `#E10613` | Full payment settled, RTO transferred, car delivered. |
-| `lost` | Lost | `#6b7280` | Deal dropped; mandatory `lost_reason` recorded. |
+| `new` | New Lead | `#3B82F6` | Inbound inquiry created; awaiting first contact within 15 mins. |
+| `contacted` | Contacted | `#0EA5E9` | Initial call or message placed; requirement gathering in progress. |
+| `interested` | Interested | `#14B8A6` | Customer confirmed vehicle preference (Brand/Budget/Fuel). |
+| `follow_up_pending` | Follow-up Pending | `#F59E0B` | Specific follow-up scheduled (callback requested, budget check). |
+
+#### Phase 2: Negotiation, Closing & Outcome (Next 4)
+| Stage Key | Label | Color | Criteria & Action Required |
+|---|---|---|---|
+| `negotiation` | Negotiation | `#EC4899` | Pricing discussion, trade-in valuation, or finance calculation. |
+| `deal_closed` | Deal Closed | `#10B981` | Deal terms agreed, paperwork prepared, final closing achieved. |
+| `sold` | Sold | `#F5223B` | Full payment settled, RTO transferred, car delivered. |
+| `lost` | Lost | `#475569` | Deal dropped; mandatory `lost_reason` recorded. |
 
 ### 3.3 Core Tables Overview
 
@@ -193,7 +197,7 @@ graph TD
 
 ```mermaid
 gantt
-    title AUTO BOURN CRM Rollout Schedule
+    title Dealership CRM Rollout Schedule
     dateFormat  YYYY-MM-DD
     section Phase 1: Stabilization
     Audit Database & RLS Policies         :done, p1_1, 2026-10-14, 2d
@@ -251,4 +255,4 @@ gantt
 | **Audit Traceability** | Every stage change logged in `crm_activity_logs` | Trigger verification tests |
 
 ---
-*Plan maintained in the AUTO BOURN engineering workspace.*
+*Plan maintained in the Dealership CRM engineering workspace.*

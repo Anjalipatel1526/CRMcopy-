@@ -16,6 +16,21 @@ import { downloadMissedFollowUpsPdf } from '@/lib/pdf-utils';
 
 type QueueSection = 'today' | 'missed' | 'upcoming' | 'all';
 
+const getFollowUpTypeBadge = (type: string) => {
+  switch (type?.toLowerCase()) {
+    case 'call':
+      return { bg: '#EFF6FF', text: '#1D4ED8', border: '#DBEAFE', icon: Phone };
+    case 'whatsapp':
+      return { bg: '#ECFDF5', text: '#047857', border: '#D1FAE5', icon: MessageCircle };
+    case 'visit':
+      return { bg: '#FFFBEB', text: '#B45309', border: '#FEF3C7', icon: User };
+    case 'test_drive':
+      return { bg: '#FFF0F2', text: '#F5223B', border: '#FFE4E6', icon: CalendarClock };
+    default:
+      return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0', icon: CalendarClock };
+  }
+};
+
 export default function FollowUpsEnginePage() {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,210 +102,526 @@ export default function FollowUpsEnginePage() {
   };
 
   return (
-    <div className="p-6 sm:p-8 max-w-[1360px] mx-auto w-full">
-        {/* Module Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+    <div style={{ padding: '24px 28px', maxWidth: '1400px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      {/* Top Header Card */}
+      <div
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          border: '1px solid #EAEFF5',
+          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)',
+          padding: '20px 24px',
+          marginBottom: '20px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+          }}
+        >
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold mb-2">
-              <CalendarClock className="w-3.5 h-3.5 text-amber-600" />
-              <span>Module 4: Zero Overdue Task Engine</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#173B67', letterSpacing: '-0.5px', margin: 0 }}>
+                Follow-Up & Scrum Queues
+              </h1>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  backgroundColor: missedItems.length > 0 ? '#FFF0F2' : '#F0FDF4',
+                  color: missedItems.length > 0 ? '#F5223B' : '#16A34A',
+                  border: missedItems.length > 0 ? '1px solid rgba(245,34,59,0.2)' : '1px solid rgba(22,163,74,0.2)',
+                }}
+              >
+                {missedItems.length > 0 ? `${missedItems.length} Overdue Missed` : 'All On Track'}
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
-              Proactive Follow-Up & Scrum Queues
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            <p style={{ fontSize: '13px', color: '#8298B8', marginTop: '4px', fontWeight: '500', margin: '4px 0 0 0' }}>
               Time-sensitive client touchpoints segmented by Today, Missed, and Upcoming with 1-click completion.
             </p>
           </div>
 
+          {/* Export Morning Scrum PDF */}
           <button
             onClick={handleExportMissedPdf}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-[#E10613] border border-red-200 text-xs font-bold transition-all shadow-xs"
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #EAEFF5',
+              borderRadius: '12px',
+              padding: '10px 16px',
+              fontSize: '12px',
+              color: '#173B67',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+              transition: 'all 0.15s ease',
+            }}
+            className="hover:bg-[#F5F8FC]"
           >
-            <FileDown className="w-4 h-4 text-[#E10613]" />
+            <FileDown style={{ width: '15px', height: '15px', color: '#F5223B' }} />
             <span>Export Morning Scrum PDF ({missedItems.length} Missed)</span>
           </button>
         </div>
+      </div>
 
-        {/* 3 Queue Segment Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          {/* Today */}
-          <button
-            onClick={() => setActiveQueue('today')}
-            className={`p-5 rounded-2xl border text-left transition-all ${
-              activeQueue === 'today'
-                ? 'bg-white border-[#E10613] ring-2 ring-red-100 shadow-md'
-                : 'bg-white border-gray-200/90 hover:border-gray-300 shadow-xs'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-amber-600 flex items-center gap-1.5 uppercase tracking-wider">
-                <Clock className="w-4 h-4" /> Today&apos;s Queue
-              </span>
-              <span className="text-2xl font-black text-gray-900">{todayItems.length}</span>
-            </div>
-            <p className="text-xs text-gray-500">Urgent touchpoints due today.</p>
-          </button>
-
-          {/* Missed */}
-          <button
-            onClick={() => setActiveQueue('missed')}
-            className={`p-5 rounded-2xl border text-left transition-all ${
-              activeQueue === 'missed'
-                ? 'bg-red-50/50 border-[#E10613] ring-2 ring-red-100 shadow-md'
-                : 'bg-white border-gray-200/90 hover:border-gray-300 shadow-xs'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-[#E10613] flex items-center gap-1.5 uppercase tracking-wider">
-                <AlertTriangle className="w-4 h-4" /> Missed / Overdue
-              </span>
-              <span className="text-2xl font-black text-[#E10613]">{missedItems.length}</span>
-            </div>
-            <p className="text-xs text-gray-500">Requires rapid re-engagement or scrum review.</p>
-          </button>
-
-          {/* Upcoming */}
-          <button
-            onClick={() => setActiveQueue('upcoming')}
-            className={`p-5 rounded-2xl border text-left transition-all ${
-              activeQueue === 'upcoming'
-                ? 'bg-white border-blue-500 ring-2 ring-blue-100 shadow-md'
-                : 'bg-white border-gray-200/90 hover:border-gray-300 shadow-xs'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-blue-600 flex items-center gap-1.5 uppercase tracking-wider">
-                <Calendar className="w-4 h-4" /> Upcoming 7 Days
-              </span>
-              <span className="text-2xl font-black text-gray-900">{upcomingItems.length}</span>
-            </div>
-            <p className="text-xs text-gray-500">Scheduled test drives and future callbacks.</p>
-          </button>
-        </div>
-
-        {/* Filter Row */}
-        <div className="flex items-center justify-between mb-4 bg-white p-3 rounded-xl border border-gray-200/80 shadow-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 font-semibold">Filter Action:</span>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-800 focus:outline-none font-medium"
+      {/* 3 Queue Segment Cards */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '16px',
+          marginBottom: '20px',
+        }}
+      >
+        {/* Today's Queue Card */}
+        <button
+          onClick={() => setActiveQueue('today')}
+          style={{
+            backgroundColor: activeQueue === 'today' ? '#FFFFFF' : '#FFFFFF',
+            border: activeQueue === 'today' ? '2px solid #F5223B' : '1px solid #EAEFF5',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            textAlign: 'left',
+            cursor: 'pointer',
+            boxShadow: activeQueue === 'today' ? '0 8px 24px rgba(245, 34, 59, 0.08)' : '0 2px 6px rgba(0,0,0,0.02)',
+            transition: 'all 0.2s ease',
+            boxSizing: 'border-box',
+          }}
+          className="hover:border-[#F5223B]/60"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#D97706', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <Clock style={{ width: '15px', height: '15px' }} />
+              Today&apos;s Queue
+            </span>
+            <span
+              style={{
+                fontSize: '18px',
+                fontWeight: '900',
+                color: activeQueue === 'today' ? '#F5223B' : '#173B67',
+                backgroundColor: '#FFFBEB',
+                padding: '2px 10px',
+                borderRadius: '9999px',
+                border: '1px solid #FEF3C7',
+              }}
             >
-              <option value="all">All Action Types</option>
-              {Object.entries(FOLLOW_UP_TYPE_LABELS).map(([k, label]) => (
-                <option key={k} value={k}>{label}</option>
-              ))}
-            </select>
+              {todayItems.length}
+            </span>
           </div>
+          <p style={{ fontSize: '12px', color: '#8298B8', margin: 0, fontWeight: '500' }}>
+            Urgent client touchpoints due today.
+          </p>
+        </button>
 
-          <span className="text-xs font-medium text-gray-500">
-            Showing {currentList.length} items
-          </span>
+        {/* Missed / Overdue Card */}
+        <button
+          onClick={() => setActiveQueue('missed')}
+          style={{
+            backgroundColor: activeQueue === 'missed' ? '#FFF5F5' : '#FFFFFF',
+            border: activeQueue === 'missed' ? '2px solid #F5223B' : '1px solid #FEE2E2',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            textAlign: 'left',
+            cursor: 'pointer',
+            boxShadow: activeQueue === 'missed' ? '0 8px 24px rgba(245, 34, 59, 0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+            transition: 'all 0.2s ease',
+            boxSizing: 'border-box',
+          }}
+          className="hover:border-[#F5223B]"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#F5223B', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <AlertTriangle style={{ width: '15px', height: '15px' }} />
+              Missed / Overdue
+            </span>
+            <span
+              style={{
+                fontSize: '18px',
+                fontWeight: '900',
+                color: '#F5223B',
+                backgroundColor: '#FFF0F2',
+                padding: '2px 10px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(245,34,59,0.2)',
+              }}
+            >
+              {missedItems.length}
+            </span>
+          </div>
+          <p style={{ fontSize: '12px', color: '#8298B8', margin: 0, fontWeight: '500' }}>
+            Requires rapid re-engagement or scrum review.
+          </p>
+        </button>
+
+        {/* Upcoming Card */}
+        <button
+          onClick={() => setActiveQueue('upcoming')}
+          style={{
+            backgroundColor: activeQueue === 'upcoming' ? '#FFFFFF' : '#FFFFFF',
+            border: activeQueue === 'upcoming' ? '2px solid #2563EB' : '1px solid #EAEFF5',
+            borderRadius: '16px',
+            padding: '18px 20px',
+            textAlign: 'left',
+            cursor: 'pointer',
+            boxShadow: activeQueue === 'upcoming' ? '0 8px 24px rgba(37, 99, 235, 0.08)' : '0 2px 6px rgba(0,0,0,0.02)',
+            transition: 'all 0.2s ease',
+            boxSizing: 'border-box',
+          }}
+          className="hover:border-blue-400"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#2563EB', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <Calendar style={{ width: '15px', height: '15px' }} />
+              Upcoming (7 Days)
+            </span>
+            <span
+              style={{
+                fontSize: '18px',
+                fontWeight: '900',
+                color: '#2563EB',
+                backgroundColor: '#EFF6FF',
+                padding: '2px 10px',
+                borderRadius: '9999px',
+                border: '1px solid #DBEAFE',
+              }}
+            >
+              {upcomingItems.length}
+            </span>
+          </div>
+          <p style={{ fontSize: '12px', color: '#8298B8', margin: 0, fontWeight: '500' }}>
+            Scheduled test drives and future callbacks.
+          </p>
+        </button>
+      </div>
+
+      {/* Filter Row */}
+      <div
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '14px',
+          border: '1px solid #EAEFF5',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+          padding: '12px 20px',
+          marginBottom: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Filter style={{ width: '14px', height: '14px', color: '#8298B8' }} />
+          <span style={{ fontSize: '12px', color: '#8298B8', fontWeight: '600' }}>Filter Action:</span>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            style={{
+              backgroundColor: '#F5F8FC',
+              border: '1px solid #EAEFF5',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              fontSize: '12px',
+              color: '#173B67',
+              fontWeight: '600',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="all">All Action Types</option>
+            {Object.entries(FOLLOW_UP_TYPE_LABELS).map(([k, label]) => (
+              <option key={k} value={k}>{label}</option>
+            ))}
+          </select>
         </div>
 
-        {/* Follow-up Queue Items */}
-        <div className="space-y-3">
-          {currentList.map((item) => {
-            const isMissed = missedItems.some((m) => m.id === item.id);
-            return (
-              <div
-                key={item.id}
-                className={`p-5 rounded-2xl bg-white border transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs ${
-                  isMissed ? 'border-red-300 bg-red-50/20' : 'border-gray-200/90'
-                }`}
-              >
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-extrabold text-sm text-gray-900">
-                      {item.lead?.customer_name || 'Prospect Client'}
-                    </span>
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 font-bold uppercase">
-                      {FOLLOW_UP_TYPE_LABELS[item.follow_up_type]}
-                    </span>
+        <span style={{ fontSize: '12px', fontWeight: '600', color: '#8298B8' }}>
+          Showing <strong style={{ color: '#173B67' }}>{currentList.length}</strong> items
+        </span>
+      </div>
+
+      {/* Follow-up Queue Items */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {currentList.map((item) => {
+          const isMissed = missedItems.some((m) => m.id === item.id);
+          const typeBadge = getFollowUpTypeBadge(item.follow_up_type);
+          const TypeIcon = typeBadge.icon;
+
+          return (
+            <div
+              key={item.id}
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '16px',
+                border: isMissed ? '1px solid #FCA5A5' : '1px solid #EAEFF5',
+                borderLeft: isMissed ? '5px solid #F5223B' : '5px solid #10B981',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+                padding: '18px 22px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box',
+              }}
+              className="hover:shadow-md hover:-translate-y-0.5"
+            >
+              {/* Tier 1: Client, Type Badge, Priority & Overdue */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <Link
+                    href={`/dashboard/crm/leads/${item.lead_id}`}
+                    style={{
+                      fontSize: '15px',
+                      fontWeight: '800',
+                      color: '#173B67',
+                      textDecoration: 'none',
+                      transition: 'color 0.15s ease',
+                    }}
+                    className="hover:text-[#F5223B]"
+                  >
+                    {item.lead?.customer_name || 'Prospect Client'}
+                  </Link>
+
+                  {/* Type badge */}
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      padding: '3px 10px',
+                      borderRadius: '9999px',
+                      backgroundColor: typeBadge.bg,
+                      color: typeBadge.text,
+                      border: `1px solid ${typeBadge.border}`,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.4px',
+                    }}
+                  >
+                    <TypeIcon style={{ width: '12px', height: '12px' }} />
+                    {FOLLOW_UP_TYPE_LABELS[item.follow_up_type] || item.follow_up_type}
+                  </span>
+
+                  {/* Priority */}
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: '700',
+                      padding: '2px 8px',
+                      borderRadius: '9999px',
+                      backgroundColor: item.priority === 'high' ? '#FFF0F2' : '#F1F5F9',
+                      color: item.priority === 'high' ? '#F5223B' : '#64748B',
+                      border: item.priority === 'high' ? '1px solid rgba(245,34,59,0.2)' : '1px solid #E2E8F0',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.4px',
+                    }}
+                  >
+                    {item.priority} Priority
+                  </span>
+
+                  {/* Overdue */}
+                  {isMissed && (
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                        item.priority === 'high'
-                          ? 'bg-red-50 text-[#E10613] border border-red-200'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
+                      style={{
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        padding: '2px 8px',
+                        borderRadius: '9999px',
+                        backgroundColor: '#FEE2E2',
+                        color: '#DC2626',
+                        border: '1px solid #FECACA',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.4px',
+                      }}
                     >
-                      {item.priority} Priority
+                      <AlertTriangle style={{ width: '11px', height: '11px' }} /> Overdue
                     </span>
-                    {isMissed && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-[#E10613] font-bold uppercase flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" /> Overdue
-                      </span>
-                    )}
-                  </div>
+                  )}
+                </div>
+              </div>
 
-                  <p className="text-xs text-gray-700 leading-relaxed max-w-2xl font-medium">
-                    {item.notes || 'Routine follow-up consultation.'}
-                  </p>
+              {/* Tier 2: Notes / Requirements Box */}
+              <div
+                style={{
+                  backgroundColor: '#F8FAFC',
+                  borderRadius: '10px',
+                  border: '1px solid #F1F5F9',
+                  padding: '10px 14px',
+                  fontSize: '13px',
+                  color: '#334155',
+                  fontWeight: '500',
+                  lineHeight: '1.5',
+                }}
+              >
+                {item.notes || 'Routine follow-up consultation.'}
+              </div>
 
-                  <div className="flex flex-wrap items-center gap-4 text-[11px] text-gray-400 pt-1">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>Scheduled: {new Date(item.scheduled_at).toLocaleString('en-IN')}</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-3.5 h-3.5" />
-                      <span>RM: {item.employee?.name || 'Assigned Executive'}</span>
-                    </span>
-                  </div>
+              {/* Tier 3: Metadata (Scheduled & RM) on left, Action buttons on right */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  paddingTop: '6px',
+                  borderTop: '1px solid #F1F5F9',
+                }}
+              >
+                {/* Metadata */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '12px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
+                    <Clock style={{ width: '14px', height: '14px', color: '#94A3B8' }} />
+                    Scheduled: <strong style={{ color: '#1E293B', fontWeight: '600' }}>{new Date(item.scheduled_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</strong>
+                  </span>
+
+                  <span style={{ fontSize: '12px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
+                    <div
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        backgroundColor: '#E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <User style={{ width: '11px', height: '11px', color: '#64748B' }} />
+                    </div>
+                    RM: <strong style={{ color: '#1E293B', fontWeight: '600' }}>{item.employee?.name || 'Assigned Executive'}</strong>
+                  </span>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0 border-gray-100">
+                {/* Actions */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   {item.lead?.phone && (
                     <>
                       <a
                         href={`tel:${item.lead.phone}`}
-                        className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          backgroundColor: '#EFF6FF',
+                          border: '1px solid #DBEAFE',
+                          color: '#2563EB',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textDecoration: 'none',
+                          transition: 'all 0.15s ease',
+                        }}
+                        className="hover:bg-blue-100 hover:scale-105"
                         title={`Call ${item.lead.phone}`}
                       >
-                        <Phone className="w-4 h-4" />
+                        <Phone style={{ width: '14px', height: '14px' }} />
                       </a>
+
                       <a
                         href={`https://wa.me/91${item.lead.phone.slice(-10)}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          backgroundColor: '#ECFDF5',
+                          border: '1px solid #A7F3D0',
+                          color: '#059669',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textDecoration: 'none',
+                          transition: 'all 0.15s ease',
+                        }}
+                        className="hover:bg-emerald-100 hover:scale-105"
                         title="WhatsApp Client"
                       >
-                        <MessageCircle className="w-4 h-4" />
+                        <MessageCircle style={{ width: '14px', height: '14px' }} />
                       </a>
                     </>
                   )}
 
                   <Link
                     href={`/dashboard/crm/leads/${item.lead_id}`}
-                    className="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors"
+                    style={{
+                      padding: '7px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
+                      color: '#173B67',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                    className="hover:bg-gray-100"
                   >
                     View Lead
                   </Link>
 
                   <button
                     onClick={() => setCompletingItem(item)}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 whitespace-nowrap"
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: '8px',
+                      backgroundColor: '#10B981',
+                      color: '#FFFFFF',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
+                      transition: 'all 0.15s ease',
+                    }}
+                    className="hover:bg-emerald-700 hover:scale-[1.02]"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <CheckCircle2 style={{ width: '14px', height: '14px' }} />
                     <span>Complete & Next</span>
                   </button>
                 </div>
               </div>
-            );
-          })}
-
-          {currentList.length === 0 && (
-            <div className="p-12 text-center rounded-2xl bg-white border border-dashed border-gray-200 text-gray-400 text-xs shadow-xs">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-2 text-emerald-500 opacity-80" />
-              <p className="font-bold text-sm text-gray-800">All Clear in this Queue!</p>
-              <p className="text-gray-400">No pending follow-ups in the selected queue.</p>
             </div>
-          )}
-        </div>
+          );
+        })}
+
+        {currentList.length === 0 && (
+          <div
+            style={{
+              padding: '48px 24px',
+              textAlign: 'center',
+              borderRadius: '16px',
+              backgroundColor: '#FFFFFF',
+              border: '2px dashed #E2E8F0',
+              color: '#8298B8',
+              fontSize: '13px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            }}
+          >
+            <CheckCircle2 style={{ width: '40px', height: '40px', margin: '0 auto 10px auto', color: '#10B981', opacity: 0.8 }} />
+            <p style={{ fontWeight: '800', fontSize: '15px', color: '#173B67', margin: '0 0 4px 0' }}>All Clear in this Queue!</p>
+            <p style={{ color: '#8298B8', margin: 0 }}>No pending follow-ups in the selected queue.</p>
+          </div>
+        )}
+      </div>
 
       <CompleteFollowUpModal
         isOpen={!!completingItem}

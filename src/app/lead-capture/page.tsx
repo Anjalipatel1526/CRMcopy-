@@ -218,7 +218,7 @@ export default function LeadCapturePage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="client@autobourn.com"
+                    placeholder="client@dealershipcrm.com"
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:border-[#E10613] focus:bg-white focus:outline-none"
                   />
                 </div>

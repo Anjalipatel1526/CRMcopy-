@@ -18,6 +18,23 @@ import { crmService } from '@/lib/crm-service';
 import { Lead, LeadStatus, LEAD_STAGES, formatBudget, SOURCE_LABELS } from '@/types/crm';
 import { downloadLeadsPdf } from '@/lib/pdf-utils';
 
+const getSourceBadgeStyle = (source: string) => {
+  switch (source?.toLowerCase()) {
+    case 'website':
+      return { bg: '#EFF6FF', text: '#1D4ED8', border: '#DBEAFE' };
+    case 'instagram':
+    case 'facebook':
+    case 'social_media':
+      return { bg: '#FDF2F8', text: '#BE185D', border: '#FCE7F3' };
+    case 'walk_in':
+      return { bg: '#ECFDF5', text: '#047857', border: '#D1FAE5' };
+    case 'referral':
+      return { bg: '#FFFBEB', text: '#B45309', border: '#FEF3C7' };
+    default:
+      return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
+  }
+};
+
 export default function LeadsPipelinePage() {
   const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -189,32 +206,151 @@ export default function LeadsPipelinePage() {
     }
   };
   return (
-    <div className="p-6 sm:p-8 max-w-[1360px] mx-auto w-full flex flex-col">
-        {/* Top Control Bar */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
-          <div>
+    <div
+      className="w-full min-w-0 flex flex-col overflow-x-hidden"
+      style={{
+        padding: '20px 24px',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Top Control Bar - Clean 2-Tier Separated Card */}
+      <div
+        className="w-full min-w-0 flex flex-col"
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '16px',
+          border: '1px solid #EAEFF5',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+          padding: '18px 22px',
+          marginBottom: '20px',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Tier 1: Title, Counter & Primary Action Buttons */}
+        <div
+          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 w-full"
+          style={{
+            paddingBottom: '14px',
+            borderBottom: '1px solid #F0F4F8',
+          }}
+        >
+          <div className="min-w-0">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Sales Pipeline</h1>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-red-50 text-[#E10613] font-bold border border-red-200">
+              <h1 className="text-xl sm:text-2xl font-black text-[#173B67] tracking-tight">Sales Pipeline</h1>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '2px 10px',
+                  borderRadius: '9999px',
+                  backgroundColor: '#FFF0F2',
+                  color: '#F5223B',
+                  border: '1px solid rgba(245,34,59,0.2)',
+                }}
+              >
                 {leads.length} Leads
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-[#8298B8] mt-0.5 font-medium">
               9-Stage consultative sales qualification workflow with drag-and-drop validation guards
             </p>
           </div>
 
-          {/* Action Bar */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-            {/* Search */}
-            <div className="relative flex-1 sm:w-60">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+          {/* Primary Action Buttons: Export PDF & New Lead */}
+          <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
+            {/* PDF Export */}
+            <button
+              onClick={handleExportPdf}
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #EAEFF5',
+                borderRadius: '12px',
+                padding: '8px 14px',
+                fontSize: '12px',
+                color: '#173B67',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                transition: 'all 0.15s ease',
+              }}
+              className="hover:bg-[#F5F8FC]"
+            >
+              <FileDown style={{ width: '15px', height: '15px', color: '#F5223B' }} />
+              <span>Export PDF</span>
+            </button>
+
+            {/* New Lead */}
+            <button
+              onClick={() => setIsAddLeadOpen(true)}
+              style={{
+                backgroundColor: '#F5223B',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '8px 16px',
+                fontSize: '12px',
+                color: '#FFFFFF',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px rgba(245,34,59,0.22)',
+                transition: 'all 0.15s ease',
+              }}
+              className="hover:bg-[#E0142C] active:scale-95"
+            >
+              <Plus style={{ width: '15px', height: '15px' }} />
+              <span>New Lead</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Tier 2: Filters, Sorting & View Toggle */}
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 w-full"
+          style={{ paddingTop: '14px' }}
+        >
+          {/* Left: Search Input + Stage Filter + Sort Order */}
+          <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
+            {/* Search Input */}
+            <div style={{ position: 'relative', width: '260px', maxWidth: '100%' }}>
+              <Search
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '10px',
+                  width: '15px',
+                  height: '15px',
+                  color: '#8298B8',
+                  pointerEvents: 'none',
+                }}
+              />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search name, phone, car..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-800 placeholder-gray-400 focus:border-[#E10613] focus:bg-white focus:outline-none"
+                style={{
+                  width: '100%',
+                  backgroundColor: '#F5F8FC',
+                  border: '1px solid #EAEFF5',
+                  borderRadius: '12px',
+                  paddingLeft: '34px',
+                  paddingRight: '12px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                  fontSize: '12px',
+                  color: '#173B67',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'all 0.15s ease',
+                }}
+                className="focus:bg-white focus:border-[#F5223B]"
               />
             </div>
 
@@ -222,7 +358,17 @@ export default function LeadsPipelinePage() {
             <select
               value={selectedStage}
               onChange={(e) => setSelectedStage(e.target.value)}
-              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-800 focus:outline-none font-medium"
+              style={{
+                backgroundColor: '#F5F8FC',
+                border: '1px solid #EAEFF5',
+                borderRadius: '12px',
+                padding: '8px 14px',
+                fontSize: '12px',
+                color: '#173B67',
+                fontWeight: '500',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
             >
               <option value="all">All 9 Stages</option>
               {LEAD_STAGES.map((s) => (
@@ -235,58 +381,99 @@ export default function LeadsPipelinePage() {
             {/* Sort Toggle */}
             <button
               onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-              className="p-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors"
+              style={{
+                backgroundColor: '#F5F8FC',
+                border: '1px solid #EAEFF5',
+                borderRadius: '12px',
+                padding: '8px 10px',
+                color: '#8298B8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}
+              className="hover:bg-[#EAEFF5] hover:text-[#173B67]"
               title="Toggle sort order"
             >
-              <ArrowUpDown className="w-4 h-4" />
+              <ArrowUpDown style={{ width: '15px', height: '15px' }} />
             </button>
+          </div>
 
-            {/* PDF Export */}
+          {/* Right: Dual View Toggle */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '2px',
+              borderRadius: '12px',
+              backgroundColor: '#F5F8FC',
+              border: '1px solid #EAEFF5',
+            }}
+            className="shrink-0"
+          >
             <button
-              onClick={handleExportPdf}
-              className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 text-gray-700 text-xs font-semibold transition-colors"
+              onClick={() => setView('kanban')}
+              style={{
+                padding: '6px 8px',
+                borderRadius: '8px',
+                backgroundColor: view === 'kanban' ? '#FFFFFF' : 'transparent',
+                color: view === 'kanban' ? '#F5223B' : '#8298B8',
+                boxShadow: view === 'kanban' ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}
+              title="Kanban Board View"
             >
-              <FileDown className="w-4 h-4 text-[#E10613]" />
-              <span>Export PDF</span>
+              <LayoutGrid style={{ width: '15px', height: '15px' }} />
             </button>
-
-            {/* Dual View Toggle */}
-            <div className="flex items-center p-0.5 rounded-xl bg-gray-100 border border-gray-200">
-              <button
-                onClick={() => setView('kanban')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  view === 'kanban' ? 'bg-white text-[#E10613] shadow-xs font-bold' : 'text-gray-500 hover:text-gray-900'
-                }`}
-                title="Kanban Board View"
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setView('list')}
-                className={`p-1.5 rounded-lg transition-all ${
-                  view === 'list' ? 'bg-white text-[#E10613] shadow-xs font-bold' : 'text-gray-500 hover:text-gray-900'
-                }`}
-                title="Table List View"
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* New Lead */}
             <button
-              onClick={() => setIsAddLeadOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-[#E10613] hover:bg-[#c70511] text-white rounded-xl text-xs font-bold shadow-md shadow-red-200 transition-all hover:scale-105 active:scale-95"
+              onClick={() => setView('list')}
+              style={{
+                padding: '6px 8px',
+                borderRadius: '8px',
+                backgroundColor: view === 'list' ? '#FFFFFF' : 'transparent',
+                color: view === 'list' ? '#F5223B' : '#8298B8',
+                boxShadow: view === 'list' ? '0 1px 3px rgba(0,0,0,0.05)' : 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s ease',
+              }}
+              title="Table List View"
             >
-              <Plus className="w-4 h-4" />
-              <span>New Lead</span>
+              <List style={{ width: '15px', height: '15px' }} />
             </button>
           </div>
         </div>
+      </div>
 
         {/* View Mode 1: Kanban 9-Stage Board */}
         {view === 'kanban' ? (
-          <div className="flex-1 overflow-x-auto pb-6">
-            <div className="flex gap-4 min-w-[2150px] min-h-[650px]">
+          <div
+            className="flex-1 w-full min-w-0"
+            style={{
+              overflowX: 'auto',
+              paddingBottom: '24px',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                gap: '16px',
+                minWidth: '2850px',
+                minHeight: '650px',
+                padding: '4px 2px 16px 2px',
+                alignItems: 'flex-start',
+              }}
+            >
               {LEAD_STAGES.map((stage) => {
                 const stageLeads = filteredLeads.filter((l) => l.lead_status === stage.key);
                 const columnTotalBudget = stageLeads.reduce((sum, l) => sum + (l.budget || 0), 0);
@@ -297,120 +484,379 @@ export default function LeadsPipelinePage() {
                     key={stage.key}
                     onDragOver={(e) => handleDragOver(e, stage.key)}
                     onDrop={(e) => handleDrop(e, stage.key)}
-                    className={`w-[275px] shrink-0 flex flex-col rounded-2xl bg-[#F4F5F7] border transition-all ${
-                      isOver ? 'border-[#E10613] bg-red-50/40 ring-2 ring-red-200' : 'border-gray-200/80 shadow-xs'
-                    }`}
+                    style={{
+                      width: '300px',
+                      minWidth: '300px',
+                      maxWidth: '300px',
+                      flexShrink: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      borderRadius: '16px',
+                      backgroundColor: isOver ? '#FFF5F5' : '#F8FAFC',
+                      border: isOver ? '2px dashed #F5223B' : '1px solid #E2E8F0',
+                      boxShadow: isOver ? '0 8px 24px rgba(245, 34, 59, 0.12)' : '0 1px 3px rgba(0, 0, 0, 0.03)',
+                      transition: 'all 0.2s ease',
+                      overflow: 'hidden',
+                    }}
                   >
                     {/* Column Header */}
-                    <div className="p-3.5 border-b border-gray-200/80 bg-white rounded-t-2xl flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div
+                      style={{
+                        padding: '14px 16px',
+                        backgroundColor: '#FFFFFF',
+                        borderBottom: '1px solid #E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderTopLeftRadius: '16px',
+                        borderTopRightRadius: '16px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
-                          style={{ backgroundColor: stage.color }}
+                          style={{
+                            width: '10px',
+                            height: '10px',
+                            borderRadius: '50%',
+                            backgroundColor: stage.color,
+                            boxShadow: `0 0 0 3px ${stage.color}25`,
+                            display: 'inline-block',
+                            flexShrink: 0,
+                          }}
                         />
-                        <span className="font-bold text-xs text-gray-900">{stage.label}</span>
-                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 font-bold text-gray-700">
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#173B67', letterSpacing: '-0.2px' }}>
+                          {stage.label}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                            backgroundColor: '#F1F5F9',
+                            color: '#475569',
+                            border: '1px solid #E2E8F0',
+                          }}
+                        >
                           {stageLeads.length}
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold text-gray-500">
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: '#8298B8' }}>
                         {formatBudget(columnTotalBudget)}
                       </span>
                     </div>
 
                     {/* Cards Container */}
-                    <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5 max-h-[750px]">
-                      {stageLeads.map((lead) => (
-                        <div
-                          key={lead.id}
-                          draggable
-                          onDragStart={() => handleDragStart(lead.id)}
-                          className="group rounded-xl bg-white hover:bg-gray-50/50 border border-gray-200/90 hover:border-red-300 p-3.5 transition-all shadow-xs hover:shadow-md cursor-grab active:cursor-grabbing"
-                        >
-                          {/* Card Top */}
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <Link
-                              href={`/dashboard/crm/leads/${lead.id}`}
-                              className="font-bold text-xs text-gray-900 hover:text-[#E10613] transition-colors line-clamp-1"
-                            >
-                              {lead.customer_name}
-                            </Link>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 shrink-0 font-medium capitalize">
-                              {SOURCE_LABELS[lead.source] || lead.source}
-                            </span>
-                          </div>
-
-                          {/* Interested Car */}
-                          {lead.interested_car && (
-                            <div className="flex items-center gap-1.5 text-xs text-gray-800 font-semibold mb-2 line-clamp-1">
-                              <Car className="w-3.5 h-3.5 text-[#E10613] shrink-0" />
-                              <span>{lead.interested_car}</span>
-                            </div>
-                          )}
-
-                          {/* Budget & Timeline */}
-                          <div className="flex items-center justify-between text-xs text-gray-600 mb-2.5 pt-2 border-t border-gray-100">
-                            <span className="font-extrabold text-gray-900">
-                              {formatBudget(lead.budget)}
-                            </span>
-                            <span className="text-[11px] text-gray-500">
-                              {lead.purchase_timeline || 'Standard'}
-                            </span>
-                          </div>
-
-                          {/* Lost Reason Notice */}
-                          {lead.lead_status === 'lost' && lead.lost_reason && (
-                            <div className="mb-2 p-1.5 rounded-lg bg-red-50 border border-red-200 text-[11px] text-red-700 font-medium line-clamp-2">
-                              Reason: {lead.lost_reason}
-                            </div>
-                          )}
-
-                          {/* Card Footer: RM & Triggers */}
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <span className="text-[11px] text-gray-500 flex items-center gap-1 font-medium">
-                              <User className="w-3 h-3 text-gray-400" />
-                              <span className="line-clamp-1 max-w-[85px]">
-                                {lead.assigned_employee?.name || 'Unassigned'}
-                              </span>
-                            </span>
-
-                            <div className="flex items-center gap-1">
-                              <a
-                                href={`tel:${lead.phone}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
-                                title={`Call ${lead.phone}`}
-                              >
-                                <Phone className="w-3.5 h-3.5" />
-                              </a>
-
-                              <a
-                                href={`https://wa.me/91${lead.phone.slice(-10)}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
-                                title="WhatsApp Client"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5" />
-                              </a>
-
+                    <div
+                      style={{
+                        padding: '12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        maxHeight: '750px',
+                        overflowY: 'auto',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      {stageLeads.map((lead) => {
+                        const sourceBadge = getSourceBadgeStyle(lead.source);
+                        return (
+                          <div
+                            key={lead.id}
+                            draggable
+                            onDragStart={() => handleDragStart(lead.id)}
+                            style={{
+                              backgroundColor: '#FFFFFF',
+                              borderRadius: '14px',
+                              border: '1px solid #E2E8F0',
+                              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+                              padding: '14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '10px',
+                              cursor: 'grab',
+                              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                              boxSizing: 'border-box',
+                            }}
+                            className="hover:shadow-md hover:border-[#F5223B]/40 hover:-translate-y-0.5 active:cursor-grabbing"
+                          >
+                            {/* Card Top: Customer Name & Source Badge */}
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                               <Link
                                 href={`/dashboard/crm/leads/${lead.id}`}
-                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
-                                title="360° Lead Hub"
+                                style={{
+                                  fontSize: '13px',
+                                  fontWeight: '700',
+                                  color: '#173B67',
+                                  textDecoration: 'none',
+                                  lineHeight: '1.3',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  maxWidth: '175px',
+                                  transition: 'color 0.15s ease',
+                                }}
+                                className="hover:text-[#F5223B]"
                               >
-                                <ChevronRight className="w-3.5 h-3.5" />
+                                {lead.customer_name}
                               </Link>
+                              <span
+                                style={{
+                                  fontSize: '10px',
+                                  fontWeight: '700',
+                                  padding: '2px 8px',
+                                  borderRadius: '9999px',
+                                  backgroundColor: sourceBadge.bg,
+                                  color: sourceBadge.text,
+                                  border: `1px solid ${sourceBadge.border}`,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.4px',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {SOURCE_LABELS[lead.source] || lead.source}
+                              </span>
+                            </div>
+
+                            {/* Interested Car */}
+                            {lead.interested_car && (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '7px 10px',
+                                  backgroundColor: '#F8FAFC',
+                                  borderRadius: '8px',
+                                  border: '1px solid #F1F5F9',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '6px',
+                                    backgroundColor: '#FFF0F2',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <Car style={{ width: '13px', height: '13px', color: '#F5223B' }} />
+                                </div>
+                                <span
+                                  style={{
+                                    fontSize: '12px',
+                                    fontWeight: '600',
+                                    color: '#1E293B',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {lead.interested_car}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Budget & Timeline */}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                paddingTop: '4px',
+                                borderTop: '1px solid #F1F5F9',
+                              }}
+                            >
+                              <div>
+                                <span style={{ fontSize: '10px', color: '#8298B8', fontWeight: '500', display: 'block' }}>
+                                  Budget
+                                </span>
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#173B67' }}>
+                                  {formatBudget(lead.budget)}
+                                </span>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <span style={{ fontSize: '10px', color: '#8298B8', fontWeight: '500', display: 'block' }}>
+                                  Timeline
+                                </span>
+                                <span
+                                  style={{
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    color: '#475569',
+                                    backgroundColor: '#F1F5F9',
+                                    padding: '2px 7px',
+                                    borderRadius: '6px',
+                                    display: 'inline-block',
+                                  }}
+                                >
+                                  {lead.purchase_timeline || 'Standard'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Lost Reason Notice */}
+                            {lead.lead_status === 'lost' && lead.lost_reason && (
+                              <div
+                                style={{
+                                  padding: '6px 10px',
+                                  borderRadius: '8px',
+                                  backgroundColor: '#FEF2F2',
+                                  border: '1px solid #FEE2E2',
+                                  fontSize: '11px',
+                                  color: '#B91C1C',
+                                  fontWeight: '500',
+                                }}
+                              >
+                                Reason: {lead.lost_reason}
+                              </div>
+                            )}
+
+                            {/* Card Footer: RM & Triggers */}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                paddingTop: '8px',
+                                borderTop: '1px solid #F1F5F9',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  minWidth: 0,
+                                }}
+                                title={`Assigned to ${lead.assigned_employee?.name || 'Unassigned'}`}
+                              >
+                                <div
+                                  style={{
+                                    width: '22px',
+                                    height: '22px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#E2E8F0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <User style={{ width: '12px', height: '12px', color: '#64748B' }} />
+                                </div>
+                                <span
+                                  style={{
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    color: '#64748B',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '110px',
+                                  }}
+                                >
+                                  {lead.assigned_employee?.name || 'Unassigned'}
+                                </span>
+                              </div>
+
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+                                <a
+                                  href={`tel:${lead.phone}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '7px',
+                                    backgroundColor: '#EFF6FF',
+                                    border: '1px solid #DBEAFE',
+                                    color: '#2563EB',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                  className="hover:bg-blue-100 hover:scale-105"
+                                  title={`Call ${lead.phone}`}
+                                >
+                                  <Phone style={{ width: '13px', height: '13px' }} />
+                                </a>
+
+                                <a
+                                  href={`https://wa.me/91${lead.phone.slice(-10)}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '7px',
+                                    backgroundColor: '#ECFDF5',
+                                    border: '1px solid #A7F3D0',
+                                    color: '#059669',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                  className="hover:bg-emerald-100 hover:scale-105"
+                                  title="WhatsApp Client"
+                                >
+                                  <MessageCircle style={{ width: '13px', height: '13px' }} />
+                                </a>
+
+                                <Link
+                                  href={`/dashboard/crm/leads/${lead.id}`}
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '7px',
+                                    backgroundColor: '#F8FAFC',
+                                    border: '1px solid #E2E8F0',
+                                    color: '#64748B',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    textDecoration: 'none',
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                  className="hover:bg-gray-100 hover:text-gray-900"
+                                  title="360° Lead Hub"
+                                >
+                                  <ChevronRight style={{ width: '14px', height: '14px' }} />
+                                </Link>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                       {stageLeads.length === 0 && (
-                        <div className="h-28 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl text-gray-400 text-xs">
-                          <span className="font-medium">No leads in stage</span>
-                          <span className="text-[10px] text-gray-400">Drag lead card here</span>
+                        <div
+                          style={{
+                            height: '110px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '2px dashed #CBD5E1',
+                            borderRadius: '12px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                            gap: '4px',
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          <span style={{ fontSize: '12px', fontWeight: '600', color: '#94A3B8' }}>
+                            No leads in stage
+                          </span>
+                          <span style={{ fontSize: '10px', color: '#CBD5E1' }}>
+                            Drag lead card here
+                          </span>
                         </div>
                       )}
                     </div>
@@ -421,105 +867,210 @@ export default function LeadsPipelinePage() {
           </div>
         ) : (
           /* View Mode 2: Table List View */
-          <div className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-gray-900">
-                <thead className="bg-gray-50 text-gray-500 border-b border-gray-200 text-[11px] uppercase tracking-wider font-bold">
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #EAEFF5',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+            }}
+          >
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', textAlign: 'left', fontSize: '13px', color: '#173B67', borderCollapse: 'collapse' }}>
+                <thead
+                  style={{
+                    backgroundColor: '#F8FAFC',
+                    color: '#64748B',
+                    borderBottom: '1px solid #EAEFF5',
+                    fontSize: '11px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: '700',
+                  }}
+                >
                   <tr>
-                    <th className="py-3.5 px-4">Client Name</th>
-                    <th className="py-3.5 px-4">Contact</th>
-                    <th className="py-3.5 px-4">Car & Brand</th>
-                    <th className="py-3.5 px-4">Budget</th>
-                    <th className="py-3.5 px-4">Current Stage</th>
-                    <th className="py-3.5 px-4">Source</th>
-                    <th className="py-3.5 px-4">Assigned RM</th>
-                    <th className="py-3.5 px-4 text-right">Actions</th>
+                    <th style={{ padding: '14px 18px' }}>Client Name</th>
+                    <th style={{ padding: '14px 18px' }}>Contact</th>
+                    <th style={{ padding: '14px 18px' }}>Car & Brand</th>
+                    <th style={{ padding: '14px 18px' }}>Budget</th>
+                    <th style={{ padding: '14px 18px' }}>Current Stage</th>
+                    <th style={{ padding: '14px 18px' }}>Source</th>
+                    <th style={{ padding: '14px 18px' }}>Assigned RM</th>
+                    <th style={{ padding: '14px 18px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 font-medium">
+                <tbody>
                   {filteredLeads.map((lead) => {
                     const currentStageObj = LEAD_STAGES.find((s) => s.key === lead.lead_status);
+                    const sourceBadge = getSourceBadgeStyle(lead.source);
                     return (
-                      <tr key={lead.id} className="hover:bg-gray-50/80 transition-colors">
-                        <td className="py-3.5 px-4 font-bold text-gray-900">
+                      <tr
+                        key={lead.id}
+                        style={{
+                          borderBottom: '1px solid #F1F5F9',
+                          transition: 'background-color 0.15s ease',
+                        }}
+                        className="hover:bg-[#F8FAFC]"
+                      >
+                        <td style={{ padding: '14px 18px', fontWeight: '700', color: '#173B67' }}>
                           <Link
                             href={`/dashboard/crm/leads/${lead.id}`}
-                            className="hover:text-[#E10613] transition-colors"
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                            className="hover:text-[#F5223B]"
                           >
                             {lead.customer_name}
                           </Link>
-                          <span className="block text-[11px] text-gray-400 font-normal">
+                          <span style={{ display: 'block', fontSize: '11px', color: '#8298B8', fontWeight: '400', marginTop: '2px' }}>
                             {lead.city || 'Chennai'}
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4">
-                          <span className="font-mono font-semibold text-gray-800">{lead.phone}</span>
+                        <td style={{ padding: '14px 18px' }}>
+                          <span style={{ fontFamily: 'monospace', fontWeight: '600', color: '#1E293B' }}>{lead.phone}</span>
                           {lead.email && (
-                            <span className="block text-[11px] text-gray-400 truncate max-w-[150px]">
+                            <span style={{ display: 'block', fontSize: '11px', color: '#8298B8', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>
                               {lead.email}
                             </span>
                           )}
                         </td>
 
-                        <td className="py-3.5 px-4">
-                          <span className="font-bold text-gray-900">
-                            {lead.interested_car || 'Luxury Vehicle'}
-                          </span>
-                          <span className="block text-[11px] text-gray-400">
+                        <td style={{ padding: '14px 18px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Car style={{ width: '14px', height: '14px', color: '#F5223B', flexShrink: 0 }} />
+                            <span style={{ fontWeight: '700', color: '#173B67' }}>
+                              {lead.interested_car || 'Luxury Vehicle'}
+                            </span>
+                          </div>
+                          <span style={{ display: 'block', fontSize: '11px', color: '#8298B8', marginTop: '2px', paddingLeft: '20px' }}>
                             {lead.preferred_brand || 'Prestige'}
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4 font-extrabold text-gray-900">
+                        <td style={{ padding: '14px 18px', fontWeight: '800', color: '#173B67' }}>
                           {formatBudget(lead.budget)}
                         </td>
 
-                        <td className="py-3.5 px-4">
+                        <td style={{ padding: '14px 18px' }}>
                           <span
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold"
                             style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              padding: '3px 10px',
+                              borderRadius: '9999px',
+                              fontSize: '11px',
+                              fontWeight: '700',
                               backgroundColor: `${currentStageObj?.color}15`,
                               color: currentStageObj?.color,
+                              border: `1px solid ${currentStageObj?.color}30`,
                             }}
                           >
                             <span
-                              className="w-1.5 h-1.5 rounded-full"
-                              style={{ backgroundColor: currentStageObj?.color }}
+                              style={{
+                                width: '6px',
+                                height: '6px',
+                                borderRadius: '50%',
+                                backgroundColor: currentStageObj?.color,
+                              }}
                             />
                             {currentStageObj?.label || lead.lead_status}
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4 capitalize text-gray-600">
-                          {SOURCE_LABELS[lead.source] || lead.source}
+                        <td style={{ padding: '14px 18px' }}>
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: '700',
+                              padding: '3px 8px',
+                              borderRadius: '9999px',
+                              backgroundColor: sourceBadge.bg,
+                              color: sourceBadge.text,
+                              border: `1px solid ${sourceBadge.border}`,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.4px',
+                            }}
+                          >
+                            {SOURCE_LABELS[lead.source] || lead.source}
+                          </span>
                         </td>
 
-                        <td className="py-3.5 px-4 text-gray-700">
-                          {lead.assigned_employee?.name || 'Unassigned'}
+                        <td style={{ padding: '14px 18px', color: '#64748B', fontWeight: '600' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div
+                              style={{
+                                width: '20px',
+                                height: '20px',
+                                borderRadius: '50%',
+                                backgroundColor: '#E2E8F0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                              }}
+                            >
+                              <User style={{ width: '11px', height: '11px', color: '#64748B' }} />
+                            </div>
+                            <span>{lead.assigned_employee?.name || 'Unassigned'}</span>
+                          </div>
                         </td>
 
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
                             <a
                               href={`tel:${lead.phone}`}
-                              className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
+                              style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '7px',
+                                backgroundColor: '#EFF6FF',
+                                border: '1px solid #DBEAFE',
+                                color: '#2563EB',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textDecoration: 'none',
+                              }}
+                              className="hover:bg-blue-100"
                               title="Call"
                             >
-                              <Phone className="w-3.5 h-3.5" />
+                              <Phone style={{ width: '13px', height: '13px' }} />
                             </a>
                             <a
                               href={`https://wa.me/91${lead.phone.slice(-10)}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+                              style={{
+                                width: '28px',
+                                height: '28px',
+                                borderRadius: '7px',
+                                backgroundColor: '#ECFDF5',
+                                border: '1px solid #A7F3D0',
+                                color: '#059669',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textDecoration: 'none',
+                              }}
+                              className="hover:bg-emerald-100"
                               title="WhatsApp"
                             >
-                              <MessageCircle className="w-3.5 h-3.5" />
+                              <MessageCircle style={{ width: '13px', height: '13px' }} />
                             </a>
                             <Link
                               href={`/dashboard/crm/leads/${lead.id}`}
-                              className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs transition-colors"
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                backgroundColor: '#F8FAFC',
+                                border: '1px solid #E2E8F0',
+                                color: '#173B67',
+                                fontWeight: '700',
+                                fontSize: '11px',
+                                textDecoration: 'none',
+                              }}
+                              className="hover:bg-gray-100"
                             >
                               View Hub
                             </Link>

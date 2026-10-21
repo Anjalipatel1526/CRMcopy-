@@ -25,7 +25,7 @@ export default function CRMTopBar({
     <header className="h-[72px] flex items-center sticky top-0 z-20 backdrop-blur-md bg-[#F5F8FC]/95 border-b border-[#EAEFF5]">
       <div className="max-w-[1440px] mx-auto w-full px-5 sm:px-8 flex items-center justify-between">
         {/* Left: Mobile Toggle + Search Bar */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0 mr-4">
           <button
             onClick={onToggleSidebar}
             aria-label="Toggle menu"
@@ -35,7 +35,7 @@ export default function CRMTopBar({
           </button>
 
           {/* Search pill container */}
-          <div className="flex items-center gap-2.5 bg-white rounded-full border border-[#EAEFF5] px-4 h-[40px] w-64 sm:w-80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all focus-within:border-[#F5223B] focus-within:ring-2 focus-within:ring-red-100">
+          <div className="flex items-center gap-3 bg-white rounded-full border border-[#EAEFF5] pl-8 pr-4 h-[40px] flex-1 max-w-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all focus-within:border-[#F5223B] focus-within:ring-2 focus-within:ring-red-100">
             <Search className="w-4 h-4 text-[#8298B8] flex-shrink-0" />
             <input
               type="text"

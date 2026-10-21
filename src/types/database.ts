@@ -1,4 +1,4 @@
-// Auto Bourn Database Types
+// CRM Database Types
 
 export type UserRole = 'admin' | 'employee';
 export type CarStatus = 'available' | 'sold' | 'reserved' | 'pending' | 'rejected';

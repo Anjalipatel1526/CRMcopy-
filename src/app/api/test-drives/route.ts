@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         car_id: car_id || null,
         car_name: car_name || null,
         scheduled_at,
-        location: location || 'Autobourn Showroom, Velachery',
+        location: location || 'Showroom, Velachery',
         notes: notes || null,
         employee_id: employee_id || null,
         status: 'scheduled',

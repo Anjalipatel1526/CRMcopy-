@@ -1,4 +1,4 @@
-# Auto Bourn CRM — Implementation Plan
+# Dealership CRM — Implementation Plan
 
 ## Architecture
 - **Admin routes**: `/dashboard/crm/*`

@@ -78,7 +78,7 @@ export default function CRMNavbar({ onOpenAddLead }: CRMNavbarProps) {
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 font-semibold text-gray-700">
               <span className="w-2 h-2 rounded-full bg-[#E10613] animate-pulse" />
-              AUTO BOURN PRESTIGE MOTORS CRM
+              PRESTIGE MOTORS CRM
             </span>
             <span className="hidden sm:inline text-gray-300">|</span>
             <span className="hidden sm:inline text-gray-500">Velachery Flagship Showroom, Chennai</span>
@@ -161,8 +161,8 @@ export default function CRMNavbar({ onOpenAddLead }: CRMNavbarProps) {
                 <Car className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="font-extrabold text-lg tracking-wider text-gray-900">AUTO BOURN</span>
-                <span className="text-[10px] tracking-widest text-[#E10613] font-bold block uppercase">PRESTIGE CRM</span>
+                <span className="font-extrabold text-lg tracking-wider text-gray-900">PRESTIGE</span>
+                <span className="text-[10px] tracking-widest text-[#E10613] font-bold block uppercase">MOTORS CRM</span>
               </div>
             </Link>
 

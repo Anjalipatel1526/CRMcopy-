@@ -235,7 +235,7 @@ export const downloadInspectionPdf = (note: string) => {
         <table class="header-table">
           <tr>
             <td>
-              <div class="logo">AUTO <span class="logo-sub">BOURN</span></div>
+              <div class="logo">PRESTIGE <span class="logo-sub">MOTORS</span></div>
               <div style="font-size: 11px; color: #666; margin-top: 4px; font-weight: 500;">PREMIUM LUXURY CARS</div>
             </td>
             <td class="title">
@@ -262,7 +262,7 @@ export const downloadInspectionPdf = (note: string) => {
 
         <div class="footer-sig">
           <div>
-            <div style="font-size: 12px; color: #333; font-weight: 700;">AUTO BOURN MOTORS</div>
+            <div style="font-size: 12px; color: #333; font-weight: 700;">PRESTIGE MOTORS</div>
             <div style="font-size: 11px; color: #666; margin-top: 4px;">Certified Pre-Owned Inspection Program</div>
           </div>
           <div class="sig-line">
@@ -477,7 +477,7 @@ export const downloadLeadsPdf = (leads: any[], filterStatus: string, search: str
         <table class="header-table">
           <tr>
             <td>
-              <div class="logo">AUTO <span class="logo-sub">BOURN</span></div>
+              <div class="logo">PRESTIGE <span class="logo-sub">MOTORS</span></div>
               <div style="font-size: 11px; color: #666; margin-top: 4px; font-weight: 500;">PREMIUM LUXURY CARS</div>
             </td>
             <td class="title">
@@ -518,7 +518,7 @@ export const downloadLeadsPdf = (leads: any[], filterStatus: string, search: str
 
         <div class="footer-sig">
           <div>
-            <div style="font-size: 12px; color: #333; font-weight: 700;">AUTO BOURN MOTORS</div>
+            <div style="font-size: 12px; color: #333; font-weight: 700;">PRESTIGE MOTORS</div>
             <div style="font-size: 11px; color: #666; margin-top: 4px;">CRM Lead System Registry Report</div>
           </div>
           <div class="sig-line">
@@ -715,7 +715,7 @@ export const downloadMissedFollowUpsPdf = (followUps: any[]) => {
         <table class="header-table">
           <tr>
             <td>
-              <div class="logo">AUTO <span class="logo-sub">BOURN</span></div>
+              <div class="logo">PRESTIGE <span class="logo-sub">MOTORS</span></div>
               <div style="font-size: 11px; color: #666; margin-top: 4px; font-weight: 500;">PREMIUM LUXURY CARS</div>
             </td>
             <td class="title">
@@ -755,7 +755,7 @@ export const downloadMissedFollowUpsPdf = (followUps: any[]) => {
 
         <div class="footer-sig">
           <div>
-            <div style="font-size: 12px; color: #333; font-weight: 700;">AUTO BOURN MOTORS</div>
+            <div style="font-size: 12px; color: #333; font-weight: 700;">PRESTIGE MOTORS</div>
             <div style="font-size: 11px; color: #666; margin-top: 4px;">CRM Overdue Follow-ups Registry</div>
           </div>
           <div class="sig-line">

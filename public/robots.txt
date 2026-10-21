@@ -8,4 +8,4 @@ Disallow: /console/
 Disallow: /api/
 Disallow: /login/
 
-Sitemap: https://www.autobourncars.com/sitemap.xml
+Sitemap: https://www.luxurycarsdealership.com/sitemap.xml

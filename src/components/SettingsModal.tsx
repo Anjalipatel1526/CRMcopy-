@@ -75,7 +75,7 @@ export default function SettingsModal({
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#173B67]">CRM System Settings</h3>
-              <p className="text-[11px] text-[#8298B8]">Auto Bourn Dealership Management</p>
+              <p className="text-[11px] text-[#8298B8]">Dealership Management</p>
             </div>
           </div>
           <button
@@ -180,7 +180,7 @@ export default function SettingsModal({
 
           {/* Version / About */}
           <div className="pt-3 border-t border-[#F0F4F8] text-center text-[10px] text-[#8298B8]">
-            <span>Auto Bourn CRM Production Build v2.4 • ECR Dealership Chennai</span>
+            <span>CRM Production Build v2.4 • Dealership Operations</span>
           </div>
         </div>
       </div>

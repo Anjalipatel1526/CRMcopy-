@@ -1,15 +1,15 @@
-// src/app/dashboard/crm/page.tsx — Auto Bourn Dealership CRM Exact Reference Overview
+// src/app/dashboard/crm/page.tsx — Dealership CRM Overview
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Users, Target, Calendar, AlertCircle, TrendingUp,
+  Target, Calendar,
   ChevronRight, Car, Plus, Phone, BarChart2,
   Settings, FileText, Star, DollarSign, Handshake, Key,
   Search, Bell, CheckCircle2, Clock,
-  ExternalLink, X
+  ExternalLink, X, UserPlus, Briefcase, XCircle, User
 } from 'lucide-react';
 import AddLeadModal from '@/components/AddLeadModal';
 import ScheduleCallModal from '@/components/ScheduleCallModal';
@@ -26,7 +26,6 @@ export default function CRMOverviewPage() {
   const [followUps, setFollowUps] = useState<FollowUp[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [selectedStageFilter, setSelectedStageFilter] = useState<string | null>(null);
 
   // Modals & Popovers
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
@@ -107,8 +106,6 @@ export default function CRMOverviewPage() {
     {
       title: 'Total Leads',
       value: totalLeadsCount,
-      icon: Users,
-      iconColor: 'text-[#2563EB]',
       trend: '+12% vs last month',
       trendType: 'up',
       href: '/dashboard/crm/leads',
@@ -116,8 +113,6 @@ export default function CRMOverviewPage() {
     {
       title: 'Active Leads',
       value: activeLeadsCount,
-      icon: Target,
-      iconColor: 'text-[#10B981]',
       trend: '+8% vs last month',
       trendType: 'up',
       href: '/dashboard/crm/leads',
@@ -125,8 +120,6 @@ export default function CRMOverviewPage() {
     {
       title: "Today's Follow-ups",
       value: todayCount,
-      icon: Calendar,
-      iconColor: 'text-[#F5223B]',
       trend: '+50% vs yesterday',
       trendType: 'up',
       href: '/dashboard/crm/follow-ups',
@@ -134,8 +127,6 @@ export default function CRMOverviewPage() {
     {
       title: 'Missed Follow-ups',
       value: missedCount,
-      icon: AlertCircle,
-      iconColor: 'text-[#F5223B]',
       trend: '-25% vs last week',
       trendType: 'down',
       href: '/dashboard/crm/follow-ups',
@@ -143,8 +134,6 @@ export default function CRMOverviewPage() {
     {
       title: 'Sold This Month',
       value: soldCount,
-      icon: Star,
-      iconColor: 'text-[#F59E0B]',
       trend: '+100% vs last month',
       trendType: 'up',
       href: '/dashboard/crm/leads?stage=sold',
@@ -152,8 +141,6 @@ export default function CRMOverviewPage() {
     {
       title: 'Conversion Rate',
       value: `${conversionRate}%`,
-      icon: TrendingUp,
-      iconColor: 'text-[#0D9488]',
       trend: '+2.2% vs last month',
       trendType: 'up',
       href: '/dashboard/crm/analytics',
@@ -181,15 +168,6 @@ export default function CRMOverviewPage() {
       iconBg: 'bg-[#2563EB]/15',
     },
     {
-      id: 'act-3',
-      title: 'Test drive scheduled',
-      subtitle: 'Priya Sharma — Hyundai i20',
-      time: '1h ago',
-      icon: Calendar,
-      iconColor: 'text-[#F59E0B]',
-      iconBg: 'bg-[#F59E0B]/15',
-    },
-    {
       id: 'act-4',
       title: 'Deal closed',
       subtitle: 'Rahul Verma — Maruti Swift',
@@ -209,18 +187,22 @@ export default function CRMOverviewPage() {
     },
   ];
 
-  // 9 Stages with multi-line clean formatting matching reference screenshot
-  const pipelineStages = [
-    { key: 'new', label: 'New Lead', line1: 'New', line2: 'Lead', color: '#3B82F6' },
-    { key: 'contacted', label: 'Contacted', line1: 'Contacted', line2: '', color: '#0EA5E9' },
-    { key: 'interested', label: 'Interested', line1: 'Interested', line2: '', color: '#14B8A6' },
-    { key: 'follow_up_pending', label: 'Follow-up Pending', line1: 'Follow-up', line2: 'Pending', color: '#F59E0B' },
-    { key: 'test_drive_scheduled', label: 'Test Drive Scheduled', line1: 'Test Drive', line2: 'Scheduled', color: '#8B5CF6' },
-    { key: 'negotiation', label: 'Negotiation', line1: 'Negot-', line2: 'iation', color: '#EC4899' },
-    { key: 'booking_done', label: 'Booking Done', line1: 'Booking', line2: 'Done', color: '#10B981' },
-    { key: 'sold', label: 'Sold', line1: 'Sold', line2: '', color: '#F5223B' },
-    { key: 'lost', label: 'Lost', line1: 'Lost', line2: '', color: '#475569' },
+  // 8 Stages organized as First 4 and Next 4 (square cards matching Quick Actions design)
+  const row1Stages = [
+    { key: 'new', label: 'New Lead', color: '#3B82F6', icon: UserPlus, href: '/dashboard/crm/leads?stage=new' },
+    { key: 'contacted', label: 'Contacted', color: '#0EA5E9', icon: Phone, href: '/dashboard/crm/leads?stage=contacted' },
+    { key: 'interested', label: 'Interested', color: '#14B8A6', icon: Star, href: '/dashboard/crm/leads?stage=interested' },
+    { key: 'follow_up_pending', label: 'Follow-up Pending', color: '#F59E0B', icon: Clock, href: '/dashboard/crm/follow-ups' },
   ];
+
+  const row2Stages = [
+    { key: 'negotiation', label: 'Negotiation', color: '#EC4899', icon: Briefcase, href: '/dashboard/crm/leads?stage=negotiation' },
+    { key: 'deal_closed', label: 'Deal Closed', color: '#10B981', icon: Handshake, href: '/dashboard/crm/leads?stage=deal_closed' },
+    { key: 'sold', label: 'Sold', color: '#F5223B', icon: Car, href: '/dashboard/crm/leads?stage=sold' },
+    { key: 'lost', label: 'Lost', color: '#475569', icon: XCircle, href: '/dashboard/crm/leads?stage=lost' },
+  ];
+
+  const pipelineStages = [...row1Stages, ...row2Stages];
 
   // 3 Unread notifications
   const notifications = [
@@ -253,35 +235,37 @@ export default function CRMOverviewPage() {
       style={{
         width: '100%',
         minHeight: '100vh',
-        padding: '24px 28px',
+        padding: '20px 24px 24px 24px',
         boxSizing: 'border-box',
         overflowX: 'hidden',
       }}
     >
-      {/* 2-Column Responsive Layout: Central Workspace (8 Cols) + Right Column (4 Cols) */}
+      {/* 2-Column Responsive Layout: Central Workspace (Flex-1) + Right Column (315px width) */}
       <div
-        className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full min-w-0 items-start"
+        className="flex flex-col xl:flex-row gap-5 w-full min-w-0 items-start"
         style={{
-          display: 'grid',
-          gap: '24px',
+          display: 'flex',
+          gap: '20px',
           width: '100%',
           boxSizing: 'border-box',
         }}
       >
-        {/* Left & Center Main Column: 8 of 12 columns with generous breathing space */}
+        {/* Left & Center Main Column: Takes remaining flexible space */}
         <div
-          className="lg:col-span-8 min-w-0 w-full"
+          className="flex-1 min-w-0 w-full"
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
+            gap: '18px',
+            flex: '1 1 0%',
+            minWidth: 0,
           }}
         >
           {/* Top Header Inside Central Section Matching Reference Screenshot */}
-          <div className="flex items-center justify-between gap-3 w-full min-w-0">
-            {/* Search Input Container */}
-            <div className="relative flex-1 max-w-[440px] min-w-0">
-              <div className="flex items-center gap-2.5 bg-white rounded-full border border-[#EAEFF5] px-4.5 h-11 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all focus-within:border-[#F5223B] focus-within:ring-2 focus-within:ring-red-100">
+          <div className="flex items-center justify-between gap-3.5 w-full min-w-0">
+            {/* Search Input Container - Extends till the profile image */}
+            <div className="relative flex-1 w-full min-w-0">
+              <div className="flex items-center gap-3 bg-white rounded-full border border-[#EAEFF5] pl-8 pr-4 h-[42px] shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all focus-within:border-[#F5223B] focus-within:ring-2 focus-within:ring-red-100 w-full">
                 <Search className="w-4 h-4 text-[#8298B8] shrink-0" />
                 <input
                   type="text"
@@ -304,7 +288,7 @@ export default function CRMOverviewPage() {
 
               {/* Live Search Results Dropdown */}
               {isSearchFocused && searchQuery.trim() && (
-                <div className="absolute top-13 left-0 right-0 bg-white rounded-2xl border border-[#EAEFF5] shadow-xl p-2 z-40 max-h-72 overflow-y-auto">
+                <div className="absolute top-12 left-0 right-0 bg-white rounded-2xl border border-[#EAEFF5] shadow-xl p-2 z-40 max-h-72 overflow-y-auto">
                   <div className="text-[10px] font-bold text-[#8298B8] px-3 py-1.5 uppercase tracking-wider">
                     Search Results ({filteredLeads.length})
                   </div>
@@ -337,14 +321,36 @@ export default function CRMOverviewPage() {
               )}
             </div>
 
-            {/* Right Header Actions: Notification Bell */}
+            {/* Right Header Actions: User Profile & Notification Bell */}
             <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+              {/* User Profile Circular Avatar Button (Moved from sidebar) */}
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                title="Alex Johnson (Sales Manager) — Settings"
+                aria-label="User Profile Settings"
+                className="w-10 h-10 rounded-full bg-white border border-[#EAEFF5] hover:border-[#CBD5E1] hover:shadow-xs transition-all flex items-center justify-center cursor-pointer relative shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 group"
+              >
+                <div className="w-8.5 h-8.5 rounded-full overflow-hidden bg-slate-900 flex items-center justify-center ring-1 ring-[#EAEFF5]">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                    alt="Alex Johnson"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                {/* Green Online Dot */}
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#10B981] ring-2 ring-white" />
+              </button>
+
               {/* Notification Bell with Red Badge "3" */}
               <div className="relative" ref={notifRef}>
                 <button
                   onClick={() => setIsNotifOpen(!isNotifOpen)}
                   aria-label="Notifications"
-                  className="w-11 h-11 rounded-full bg-white border border-[#EAEFF5] text-[#8298B8] hover:text-[#173B67] flex items-center justify-center transition-colors cursor-pointer relative shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0"
+                  className="w-10 h-10 rounded-full bg-white border border-[#EAEFF5] text-[#8298B8] hover:text-[#173B67] flex items-center justify-center transition-colors cursor-pointer relative shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0"
                 >
                   <Bell className="w-4.5 h-4.5" />
                   <span className="absolute -top-0.5 -right-0.5 bg-[#F5223B] text-white text-[9px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center leading-none">
@@ -354,7 +360,7 @@ export default function CRMOverviewPage() {
 
                 {/* Notifications Dropdown Popover */}
                 {isNotifOpen && (
-                  <div className="absolute right-0 top-13 w-80 bg-white rounded-2xl border border-[#EAEFF5] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl border border-[#EAEFF5] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
                     <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#F0F4F8] mb-2">
                       <span className="text-xs font-bold text-[#173B67]">CRM Notifications</span>
                       <span className="text-[10px] font-bold text-[#F5223B] bg-red-50 px-2 py-0.5 rounded-full">
@@ -392,24 +398,23 @@ export default function CRMOverviewPage() {
 
           {/* Heading Section */}
           <div className="pt-0.5">
-            <h1 className="text-2xl sm:text-[28px] font-extrabold text-[#173B67] tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#173B67] tracking-tight leading-tight">
               CRM Overview
             </h1>
-            <p className="text-xs sm:text-sm text-[#8298B8] font-medium mt-1">
-              Customer Relationship Management — Auto Bourn
+            <p className="text-xs sm:text-[13px] text-[#8298B8] font-medium mt-0.5">
+              Customer Relationship Management
             </p>
           </div>
 
-          {/* 6 KPI Cards (3x2 Grid on desktop, 2x3 on tablet, 1x6 on mobile) */}
+          {/* 6 KPI Cards (3x2 Grid on desktop) */}
           <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-0"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 min-w-0"
             style={{
               display: 'grid',
-              gap: '16px',
+              gap: '14px',
             }}
           >
             {metricCards.map((card, idx) => {
-              const Icon = card.icon;
               return (
                 <Link
                   key={idx}
@@ -419,24 +424,23 @@ export default function CRMOverviewPage() {
                     backgroundColor: '#FFFFFF',
                     borderRadius: '16px',
                     border: '1px solid #EAEFF5',
-                    padding: '20px 22px',
+                    padding: '16px 18px',
                     boxSizing: 'border-box',
                   }}
                 >
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <Icon className={`w-4.5 h-4.5 ${card.iconColor} shrink-0 group-hover:scale-110 transition-transform`} />
-                    <span className="text-xs sm:text-[13px] font-medium text-[#8298B8] truncate">
+                  <div className="mb-2">
+                    <span className="text-xs sm:text-[13px] font-medium text-[#8298B8] truncate block">
                       {card.title}
                     </span>
                   </div>
 
-                  <div className="my-1.5">
-                    <span className="text-2xl sm:text-3xl lg:text-[32px] font-bold text-[#173B67] tracking-tight leading-none">
+                  <div className="my-1">
+                    <span className="text-2xl sm:text-[28px] font-bold text-[#173B67] tracking-tight leading-none">
                       {card.value}
                     </span>
                   </div>
 
-                  <div className="mt-2.5 flex items-center text-xs font-semibold">
+                  <div className="mt-2 flex items-center text-xs font-semibold">
                     {card.trendType === 'up' ? (
                       <span className="text-[#10B981] flex items-center gap-1">
                         <span>▲</span>
@@ -454,240 +458,199 @@ export default function CRMOverviewPage() {
             })}
           </div>
 
-          {/* Lead Pipeline Section Card (Connected Stages) */}
+          {/* Lead Pipeline Section Card (Clean Flux Cards) */}
           <div
             className="bg-white rounded-2xl border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] min-w-0"
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
               border: '1px solid #EAEFF5',
-              padding: '22px 24px',
+              padding: '20px 22px',
               boxSizing: 'border-box',
             }}
           >
-            <div className="flex items-center justify-between gap-2 mb-4 pb-2 border-b border-[#F0F4F8]">
-              <h2 className="text-sm sm:text-base font-bold text-[#173B67]">
+            <div
+              className="flex items-center justify-between gap-2 mb-6"
+              style={{ marginBottom: '1.5rem' }}
+            >
+              <h2 className="text-[14px] sm:text-[15px] font-bold text-[#173B67] tracking-tight leading-[1.5]">
                 Lead Pipeline
               </h2>
-              <span className="text-xs font-semibold text-[#F5223B] shrink-0">
-                Interactive Diagram
-              </span>
             </div>
 
-            {/* Horizontal Connected Stage Flow with subtle chevrons & fixed-height baseline alignment */}
-            <div
-              className="flex items-center justify-between w-full min-w-0"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                gap: '2px',
-              }}
-            >
-              {pipelineStages.map((stage, idx) => {
-                const count = leads.filter((l) => l.lead_status === stage.key).length || 1;
-                const isSelected = selectedStageFilter === stage.key;
+            {/* 2-Row Square Cards (First 4 and Next 4) matching Quick Actions design */}
+            <div className="flex flex-col gap-3 sm:gap-3.5 w-full min-w-0">
+              {/* Row 1: First 4 Stages */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full min-w-0">
+                {row1Stages.map((stage) => {
+                  const Icon = stage.icon;
 
-                return (
-                  <React.Fragment key={stage.key}>
-                    <button
-                      onClick={() => setSelectedStageFilter(isSelected ? null : stage.key)}
-                      title={`Filter by ${stage.label}`}
-                      className={`flex-1 min-w-0 py-2 px-0.5 rounded-xl text-center transition-all flex flex-col items-center justify-between cursor-pointer group ${
-                        isSelected
-                          ? 'bg-red-50/80 border border-red-200'
-                          : 'hover:bg-[#F5F8FC] border border-transparent'
-                      }`}
-                      style={{
-                        flex: '1 1 0%',
-                        minWidth: 0,
-                      }}
+                  return (
+                    <Link
+                      key={stage.key}
+                      href={stage.href}
+                      title={`Open ${stage.label}`}
+                      className="min-w-0 rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-[#CBD5E1] hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3.5 px-2 h-[92px] sm:h-[96px]"
                     >
-                      {/* Top colored indicator dot */}
-                      <span
-                        className="w-2.5 h-2.5 rounded-full mb-1.5 shrink-0 transition-transform group-hover:scale-125"
+                      <div
+                        className="w-8.5 h-8.5 rounded-full text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0"
                         style={{ backgroundColor: stage.color }}
-                      />
-
-                      {/* Fixed height container with 2 clean lines guarantees zero chevron collisions */}
-                      <div className="h-7 sm:h-8 flex flex-col items-center justify-center text-[9.5px] sm:text-[10.5px] font-bold text-[#8298B8] group-hover:text-[#173B67] leading-[1.15] text-center w-full px-0.5">
-                        <span className="truncate w-full">{stage.line1}</span>
-                        {stage.line2 ? (
-                          <span className="truncate w-full">{stage.line2}</span>
-                        ) : (
-                          <span className="invisible select-none">-</span>
-                        )}
+                      >
+                        <Icon className="w-4 h-4" />
                       </div>
-
-                      {/* Number count aligned on exact horizontal baseline */}
-                      <span className="text-sm sm:text-base font-bold text-[#173B67] block my-1">
-                        {count}
-                      </span>
-
-                      {/* Percentage aligned on exact horizontal baseline */}
-                      <span className="text-[9.5px] sm:text-[10px] text-[#8298B8] font-medium block">
-                        11%
-                      </span>
-                    </button>
-
-                    {idx < pipelineStages.length - 1 && (
-                      <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#CBD5E1] shrink-0" />
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-
-            {selectedStageFilter && (
-              <div className="mt-4 pt-3 border-t border-[#EAEFF5] flex items-center justify-between text-xs">
-                <span className="font-medium text-[#8298B8]">
-                  Filtered by Stage: <strong className="text-[#173B67] capitalize">{selectedStageFilter.replace(/_/g, ' ')}</strong>
-                </span>
-                <Link
-                  href={`/dashboard/crm/leads?stage=${selectedStageFilter}`}
-                  className="font-bold text-[#F5223B] hover:underline flex items-center gap-1"
-                >
-                  <span>Open Stage in Pipeline</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+                      <div className="h-[24px] flex items-center justify-center w-full px-1">
+                        <span className="text-xs sm:text-[12.5px] font-bold text-[#173B67] group-hover:text-[#F5223B] leading-tight text-center truncate">
+                          {stage.label}
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-            )}
+
+              {/* Row 2: Next 4 Stages */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 w-full min-w-0">
+                {row2Stages.map((stage) => {
+                  const Icon = stage.icon;
+
+                  return (
+                    <Link
+                      key={stage.key}
+                      href={stage.href}
+                      title={`Open ${stage.label}`}
+                      className="min-w-0 rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-[#CBD5E1] hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3.5 px-2 h-[92px] sm:h-[96px]"
+                    >
+                      <div
+                        className="w-8.5 h-8.5 rounded-full text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0"
+                        style={{ backgroundColor: stage.color }}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="h-[24px] flex items-center justify-center w-full px-1">
+                        <span className="text-xs sm:text-[12.5px] font-bold text-[#173B67] group-hover:text-[#F5223B] leading-tight text-center truncate">
+                          {stage.label}
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* 3 Bottom Launchpad Feature Cards (Horizontal alignment matching reference image) */}
+          {/* 2 Bottom Launchpad Feature Cards */}
           <div
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 min-w-0"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 min-w-0"
             style={{
               display: 'grid',
-              gap: '16px',
+              gap: '14px',
             }}
           >
             <Link
               href="/dashboard/crm/leads"
-              className="rounded-2xl bg-white border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#CBD5E1] hover:shadow-md transition-all group flex items-start gap-3.5 min-w-0"
+              className="rounded-2xl bg-white border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#CBD5E1] hover:shadow-md transition-all group flex items-start gap-3 min-w-0"
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '16px',
                 border: '1px solid #EAEFF5',
-                padding: '18px 20px',
+                padding: '16px 18px',
                 boxSizing: 'border-box',
               }}
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F5223B] text-white flex items-center justify-center shrink-0 shadow-xs shadow-red-200 group-hover:scale-105 transition-transform">
-                <Key className="w-4.5 h-4.5" />
+              <div className="w-8.5 h-8.5 rounded-xl bg-[#F5223B] text-white flex items-center justify-center shrink-0 shadow-xs shadow-red-200 group-hover:scale-105 transition-transform">
+                <Key className="w-4 h-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-xs sm:text-sm font-bold text-[#173B67] group-hover:text-[#F5223B] transition-colors leading-tight">
-                  9-Stage Visual Pipeline
+                <h3 className="text-xs sm:text-[13px] font-bold text-[#173B67] group-hover:text-[#F5223B] transition-colors leading-tight">
+                  Visual Pipeline & Kanban
                 </h3>
-                <p className="text-[10.5px] sm:text-[11px] text-[#8298B8] leading-relaxed mt-1 line-clamp-3">
-                  Track and move leads through 9 distinct stages with a clear visual pipeline.
+                <p className="text-[10px] sm:text-[10.5px] text-[#8298B8] leading-relaxed mt-0.5 line-clamp-2">
+                  Track and move leads through distinct qualification stages with a clear visual pipeline.
                 </p>
               </div>
             </Link>
 
             <Link
               href="/dashboard/crm/follow-ups"
-              className="rounded-2xl bg-white border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#CBD5E1] hover:shadow-md transition-all group flex items-start gap-3.5 min-w-0"
+              className="rounded-2xl bg-white border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#CBD5E1] hover:shadow-md transition-all group flex items-start gap-3 min-w-0"
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '16px',
                 border: '1px solid #EAEFF5',
-                padding: '18px 20px',
+                padding: '16px 18px',
                 boxSizing: 'border-box',
               }}
             >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F59E0B] text-white flex items-center justify-center shrink-0 shadow-xs shadow-amber-200 group-hover:scale-105 transition-transform">
-                <Calendar className="w-4.5 h-4.5" />
+              <div className="w-8.5 h-8.5 rounded-xl bg-[#F59E0B] text-white flex items-center justify-center shrink-0 shadow-xs shadow-amber-200 group-hover:scale-105 transition-transform">
+                <Calendar className="w-4 h-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-xs sm:text-sm font-bold text-[#173B67] group-hover:text-[#F59E0B] transition-colors leading-tight">
+                <h3 className="text-xs sm:text-[13px] font-bold text-[#173B67] group-hover:text-[#F59E0B] transition-colors leading-tight">
                   Follow-ups & Daily Scrum
                 </h3>
-                <p className="text-[10.5px] sm:text-[11px] text-[#8298B8] leading-relaxed mt-1 line-clamp-3">
+                <p className="text-[10px] sm:text-[10.5px] text-[#8298B8] leading-relaxed mt-0.5 line-clamp-2">
                   Today&apos;s tasks, overdue calls, and upcoming follow-ups at a glance.
-                </p>
-              </div>
-            </Link>
-
-            <Link
-              href="/dashboard/crm/test-drives"
-              className="rounded-2xl bg-white border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#CBD5E1] hover:shadow-md transition-all group flex items-start gap-3.5 min-w-0"
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '16px',
-                border: '1px solid #EAEFF5',
-                padding: '18px 20px',
-                boxSizing: 'border-box',
-              }}
-            >
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#8B5CF6] text-white flex items-center justify-center shrink-0 shadow-xs shadow-purple-200 group-hover:scale-105 transition-transform">
-                <Car className="w-4.5 h-4.5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="text-xs sm:text-sm font-bold text-[#173B67] group-hover:text-[#8B5CF6] transition-colors leading-tight">
-                  Test Drives & Deal Closures
-                </h3>
-                <p className="text-[10.5px] sm:text-[11px] text-[#8298B8] leading-relaxed mt-1 line-clamp-3">
-                  Track test drives, negotiations and close more deals, faster.
                 </p>
               </div>
             </Link>
           </div>
         </div>
 
-        {/* Right Column: 4 of 12 columns covering the full right side seamlessly with TWO distinct cards */}
+        {/* Right Column: 315px wide, perfectly spaced with zero overflow */}
         <div
-          className="lg:col-span-4 w-full min-w-0"
+          className="w-full xl:w-[315px] shrink-0"
           style={{
+            width: '100%',
+            maxWidth: '315px',
+            flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
+            gap: '16px',
           }}
         >
           {/* Card 1: Recent Activity */}
           <div
-            className="bg-white rounded-2xl border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] min-w-0"
+            className="bg-white rounded-2xl border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] w-full overflow-hidden"
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
               border: '1px solid #EAEFF5',
-              padding: '22px 24px',
+              padding: '18px 16px',
               boxSizing: 'border-box',
             }}
           >
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#F0F4F8]">
-              <h2 className="text-sm sm:text-base font-bold text-[#173B67]">
+            <div
+              className="flex items-center justify-between mb-6"
+              style={{ marginBottom: '1.5rem' }}
+            >
+              <h2 className="text-[14px] sm:text-[15px] font-bold text-[#173B67] tracking-tight leading-[1.5]">
                 Recent Activity
               </h2>
               <Link
                 href="/dashboard/crm/activity-logs"
-                className="text-xs font-semibold text-[#2563EB] hover:underline transition-colors"
+                className="text-xs font-semibold text-[#2563EB] hover:text-[#1D4ED8] hover:underline transition-colors leading-[1.5]"
               >
                 View All
               </Link>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="flex flex-col gap-[18px]">
               {recentActivities.map((act) => {
                 const Icon = act.icon;
                 return (
-                  <div key={act.id} className="flex items-center justify-between gap-3 group">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-8.5 h-8.5 rounded-full ${act.iconBg} ${act.iconColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-xs sm:text-[13px] font-bold text-[#173B67] truncate">
-                          {act.title}
-                        </span>
-                        <span className="text-[11px] text-[#8298B8] truncate">
-                          {act.subtitle}
-                        </span>
-                      </div>
+                  <div key={act.id} className="flex items-center gap-3 group">
+                    <div className={`w-9 h-9 rounded-full ${act.iconBg} ${act.iconColor} flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform`}>
+                      <Icon className="w-4.5 h-4.5" />
                     </div>
-                    <span className="text-[10.5px] font-medium text-[#8298B8] shrink-0">
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <span className="text-[13px] font-bold text-[#173B67] truncate leading-[1.5] group-hover:text-[#0070F3] transition-colors">
+                        {act.title}
+                      </span>
+                      <span className="text-[11px] font-medium text-[#8298B8] truncate leading-[1.5] mt-0.5">
+                        {act.subtitle}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-medium text-[#8298B8] shrink-0 whitespace-nowrap pl-1 text-right leading-[1.5]">
                       {act.time}
                     </span>
                   </div>
@@ -698,145 +661,118 @@ export default function CRMOverviewPage() {
 
           {/* Card 2: Quick Actions */}
           <div
-            className="bg-white rounded-2xl border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] min-w-0"
+            className="bg-white rounded-2xl border border-[#EAEFF5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] w-full overflow-hidden"
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '16px',
               border: '1px solid #EAEFF5',
-              padding: '22px 24px',
+              padding: '16px 18px',
               boxSizing: 'border-box',
             }}
           >
-            <h2 className="text-sm sm:text-base font-bold text-[#173B67] mb-4 pb-2 border-b border-[#F0F4F8]">
+            <h2
+              className="text-[14px] font-bold text-[#173B67] mb-6 tracking-tight leading-[1.5]"
+              style={{ marginBottom: '1.5rem', lineHeight: '1.5' }}
+            >
               Quick Actions
             </h2>
 
             <div
-              className="grid grid-cols-3 gap-3 min-w-0"
+              className="grid grid-cols-3 gap-2.5 min-w-0"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-                gap: '12px',
+                gap: '10px',
               }}
             >
               {/* 1. Add Lead */}
               <button
                 onClick={() => setIsAddLeadOpen(true)}
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-blue-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-blue-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#0070F3] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#0070F3] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <Plus className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  Add Lead
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    Add Lead
+                  </span>
+                </div>
               </button>
 
               {/* 2. Schedule Call */}
               <button
                 onClick={() => setIsScheduleCallOpen(true)}
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-emerald-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-emerald-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#10B981] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#10B981] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <Phone className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  Schedule Call
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    Schedule Call
+                  </span>
+                </div>
               </button>
 
               {/* 3. Add Follow-up */}
               <button
                 onClick={() => setIsAddFollowUpOpen(true)}
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-amber-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-amber-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <Calendar className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  Add Follow-up
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    Add Follow-up
+                  </span>
+                </div>
               </button>
 
               {/* 4. Create Deal */}
               <button
                 onClick={() => setIsCreateDealOpen(true)}
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-purple-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-purple-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#8B5CF6] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#8B5CF6] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <Handshake className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  Create Deal
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    Create Deal
+                  </span>
+                </div>
               </button>
 
               {/* 5. View Reports */}
               <Link
                 href="/dashboard/crm/analytics"
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-red-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-red-200 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#F5223B] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#F5223B] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <BarChart2 className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  View Reports
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    View Reports
+                  </span>
+                </div>
               </Link>
 
               {/* 6. Settings */}
               <button
                 onClick={() => setIsSettingsOpen(true)}
-                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-slate-300 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer min-w-0"
-                style={{
-                  border: '1px solid #EAEFF5',
-                  borderRadius: '12px',
-                  backgroundColor: '#F8FAFC',
-                  padding: '14px 6px',
-                  boxSizing: 'border-box',
-                }}
+                className="rounded-xl border border-[#EAEFF5] bg-[#F8FAFC] hover:bg-white hover:border-slate-300 hover:shadow-xs transition-all flex flex-col items-center justify-center text-center group cursor-pointer py-3 px-1.5 min-w-0 h-[92px]"
               >
-                <div className="w-8.5 h-8.5 rounded-full bg-[#475569] text-white flex items-center justify-center mb-2 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <div className="w-8.5 h-8.5 rounded-full bg-[#475569] text-white flex items-center justify-center mb-2.5 shadow-xs group-hover:scale-105 transition-transform shrink-0">
                   <Settings className="w-4 h-4" />
                 </div>
-                <span className="text-[10.5px] sm:text-xs font-semibold text-[#173B67] leading-tight text-center break-words w-full">
-                  Settings
-                </span>
+                <div className="h-[28px] flex items-center justify-center w-full px-0.5">
+                  <span className="text-[11px] font-semibold text-[#173B67] leading-[1.25] text-center line-clamp-2">
+                    Settings
+                  </span>
+                </div>
               </button>
             </div>
           </div>

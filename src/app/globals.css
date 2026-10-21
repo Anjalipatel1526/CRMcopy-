@@ -12,7 +12,7 @@ html, body, button, input, select, textarea {
 }
 
 :root {
-  /* Brand Design System — Auto Bourn Dealership CRM */
+  /* Brand Design System — Dealership CRM */
   --brand-red: #F5223B;
   --brand-red-hover: #E01B33;
   --brand-red-light: rgba(245, 34, 59, 0.08);

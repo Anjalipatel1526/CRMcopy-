@@ -81,7 +81,7 @@ export default function ActivityLogsPage() {
       type: 'inquiry',
       title: 'New inquiry received',
       description: 'Ankit Das — Tata Nexon online inquiry received with trade-in request.',
-      actor: 'Auto Bourn Website Portal',
+      actor: 'Website Portal',
       timestamp: '3h ago',
       customer: 'Ankit Das',
       badge: 'New Inquiry',
